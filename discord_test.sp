@@ -21,7 +21,7 @@ public Plugin myinfo =
 DiscordBot gBot;
 
 public void OnPluginStart() {
-	gBot = new DiscordBot("<Bot Token>");
+	gBot = new DiscordBot("MTg2MjU2NDU0ODYzMjkwMzY5.C08ykw.S_RSnHPDD70AJr7C3TER1mmEGaQ");
 	
 	RegConsoleCmd("sm_getguilds", Cmd_GetGuilds);
 	RegConsoleCmd("sm_send", Cmd_SendMsg);
@@ -55,7 +55,17 @@ public void ChannelList(DiscordBot bot, char[] guild, DiscordChannel Channel, an
 			gBot.SendMessage(Channel, "Sending message with DiscordBot.SendMessage");
 			gBot.SendMessageToChannelID(id, "Sending message with DiscordBot.SendMessageToChannelID");
 			Channel.SendMessage(gBot, "Sending message with DiscordChannel.SendMessage");
+			
+			gBot.StartListeningToChannel(Channel, OnMessage);
 		}
+	}
+}
+
+public void OnMessage(DiscordBot Bot, DiscordChannel Channel, const char[] message) {
+	PrintToServer("Message from discord: %s", message);
+	
+	if(StrEqual(message, "Ping", false)) {
+		gBot.SendMessage(Channel, "Pong!");
 	}
 }
 
