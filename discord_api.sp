@@ -30,7 +30,7 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 	CreateNative("DiscordBot.SendMessage", Native_DiscordBot_SendMessage);
 	CreateNative("DiscordBot.SendMessageToChannelID", Native_DiscordBot_SendMessageToChannel);
 	
-	CreateNative("DiscordBot.ListenToChannel", Native_DiscordBot_ListenToChannel);
+	CreateNative("DiscordBot.StartTimer", Native_DiscordBot_StartTimer);
 	
 	CreateNative("DiscordBot.GetGuilds", Native_DiscordBot_GetGuilds);
 	CreateNative("DiscordBot.GetGuildChannels", Native_DiscordBot_GetGuildChannels);
@@ -53,7 +53,7 @@ public int Native_DiscordBot_Token_Get(Handle plugin, int numParams) {
 stock void BuildAuthHeader(Handle request, DiscordBot Bot) {
 	static char buffer[256];
 	static char token[196];
-	GetTrieString(bot, "token", token, sizeof(token));
+	GetTrieString(Bot, "token", token, sizeof(token));
 	FormatEx(buffer, sizeof(buffer), "Bot %s", token);
 	SteamWorks_SetHTTPRequestHeaderValue(request, "Authorization", buffer);
 }
