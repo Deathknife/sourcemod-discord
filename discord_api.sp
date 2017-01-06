@@ -14,11 +14,7 @@
 #include "discord/SendMessage.sp"
 #include "discord/GetGuilds.sp"
 #include "discord/GetGuildChannels.sp"
-
-#define MAXBOTS 128
-
-bool bBotUsed[MAXBOTS] = {false, ...}; 	//Specifies if bot id is being used
-char cBotToken[MAXBOTS][128];			//Token corresponding to bot(used for Auth)
+#include "discord/ListenToChannel.sp"
 
 public Plugin myinfo =  {
 	name = "Discord API",
@@ -29,11 +25,12 @@ public Plugin myinfo =  {
 };
 
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max) {
-	CreateNative("DiscordBot.DiscordBot", Native_DiscordBot_Instance);
 	CreateNative("DiscordBot.GetToken", Native_DiscordBot_Token_Get);
 	
 	CreateNative("DiscordBot.SendMessage", Native_DiscordBot_SendMessage);
 	CreateNative("DiscordBot.SendMessageToChannelID", Native_DiscordBot_SendMessageToChannel);
+	
+	CreateNative("DiscordBot.ListenToChannel", Native_DiscordBot_ListenToChannel);
 	
 	CreateNative("DiscordBot.GetGuilds", Native_DiscordBot_GetGuilds);
 	CreateNative("DiscordBot.GetGuildChannels", Native_DiscordBot_GetGuildChannels);
@@ -46,31 +43,20 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 public void OnPluginStart() {
 }
 
-public int Native_DiscordBot_Instance(Handle plugin, int numParams) {
-	//Find closest bBotUsed
-	for(int i = 0; i < MAXBOTS; i++) {
-		if(!bBotUsed[i]) {
-			char token[128];
-			GetNativeString(1, token, sizeof(token));
-			
-			bBotUsed[i] = true;
-			strcopy(cBotToken[i], sizeof(cBotToken[]), token);
-			
-			return i;
-		}
-	}
-	ThrowNativeError(SP_ERROR_NATIVE, "Bot limit reached");
-	return -1;
-}
-
 public int Native_DiscordBot_Token_Get(Handle plugin, int numParams) {
 	DiscordBot bot = GetNativeCell(1);
-	SetNativeString(2, cBotToken[bot], GetNativeCell(3));
+	static char token[196];
+	ResetPack(bot);
+	ReadPackString(bot, token, sizeof(token));
+	SetNativeString(2, token, GetNativeCell(3));
 }
 
 stock void BuildAuthHeader(Handle request, DiscordBot Bot) {
 	static char buffer[256];
-	FormatEx(buffer, sizeof(buffer), "Bot %s", cBotToken[Bot]);
+	static char token[196];
+	ResetPack(Bot);
+	ReadPackString(Bot, token, sizeof(token));
+	FormatEx(buffer, sizeof(buffer), "Bot %s", token);
 	SteamWorks_SetHTTPRequestHeaderValue(request, "Authorization", buffer);
 }
 
