@@ -3,14 +3,22 @@
 #endif
 #define _discord_included
 
-methodmap DiscordBot  __nullable__ {
-	public native DiscordBot(const char[] token);
+methodmap DiscordBot < DataPack {
+	public DiscordBot(const char[] token) {
+		DataPack dp = new DataPack();
+		WritePackString(dp, token);
+		return dp;
+	}
 	
 	public native void GetToken(char[] token, int maxlength);
 	
 	public native void SendMessage(DiscordChannel channel, char[] message);
 	
 	public native void SendMessageToChannelID(char[] channel, char[] message);
+	
+	public void ListenToChannel(DiscordChannel channel, OnChannelMessage fCallback) {
+		//
+	}
 	
 	public native void GetGuilds(DiscordGuildsRetrieve fCallback = INVALID_FUNCTION, DiscordGuildsRetrievedAll fCallbackAll = INVALID_FUNCTION, any data=0);
 	
@@ -33,7 +41,7 @@ methodmap DiscordChannel < StringMap {
 	
 	public native void SendMessage(DiscordBot Bot, char[] message);
 
-	public void GetGuild(char[] buffer, int maxlength) {
+	public void GetGuildID(char[] buffer, int maxlength) {
 		GetTrieString(this, "guild_id", buffer, maxlength);
 	}
 	
@@ -98,3 +106,10 @@ methodmap DiscordChannel < StringMap {
 		}
 	}
 }
+
+typeset OnChannelMessage { 
+	function void(DiscordBot bot, const char[] channel, const char[] message);
+	function void(DiscordBot bot, const char[] channel, const char[] message, const char[] userID);
+	function void(DiscordBot bot, const char[] channel, const char[] message, const char[] userID, const char[] userName, const char[] discriminator);
+	function void(DiscordBot bot, const char[] channel, const char[] message, const char[] userID, const char[] userName, const char[] discriminator, Handle hJson);
+};
