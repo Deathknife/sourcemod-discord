@@ -3,10 +3,10 @@
 #endif
 #define _discord_included
 
-methodmap DiscordBot < DataPack {
+methodmap DiscordBot < StringMap {
 	public DiscordBot(const char[] token) {
-		DataPack dp = new DataPack();
-		WritePackString(dp, token);
+		StringMap mp = new StringMap();
+		SetTrieString(mp, "token", token);
 		return dp;
 	}
 	
@@ -36,7 +36,7 @@ typedef DiscordGuildChannelsRetrieveAll = function void (DiscordBot bot, char[] 
 
 methodmap DiscordChannel < StringMap {
 	public DiscordChannel() {
-		return view_as<DiscordChannel>(view_as<Handle>(new StringMap())); //not sure if necessary
+		return new StringMap();
 	}
 	
 	public native void SendMessage(DiscordBot Bot, char[] message);

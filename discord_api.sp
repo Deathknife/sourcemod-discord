@@ -46,16 +46,14 @@ public void OnPluginStart() {
 public int Native_DiscordBot_Token_Get(Handle plugin, int numParams) {
 	DiscordBot bot = GetNativeCell(1);
 	static char token[196];
-	ResetPack(bot);
-	ReadPackString(bot, token, sizeof(token));
+	GetTrieString(bot, "token", token, sizeof(token));
 	SetNativeString(2, token, GetNativeCell(3));
 }
 
 stock void BuildAuthHeader(Handle request, DiscordBot Bot) {
 	static char buffer[256];
 	static char token[196];
-	ResetPack(Bot);
-	ReadPackString(Bot, token, sizeof(token));
+	GetTrieString(bot, "token", token, sizeof(token));
 	FormatEx(buffer, sizeof(buffer), "Bot %s", token);
 	SteamWorks_SetHTTPRequestHeaderValue(request, "Authorization", buffer);
 }
