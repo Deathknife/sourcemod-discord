@@ -21,7 +21,7 @@ public Plugin myinfo =
 DiscordBot gBot;
 
 public void OnPluginStart() {
-	gBot = new DiscordBot("MTg2MjU2NDU0ODYzMjkwMzY5.C08ykw.S_RSnHPDD70AJr7C3TER1mmEGaQ");
+	gBot = new DiscordBot("<Bot Token>");
 	
 	RegConsoleCmd("sm_getguilds", Cmd_GetGuilds);
 	RegConsoleCmd("sm_send", Cmd_SendMsg);
