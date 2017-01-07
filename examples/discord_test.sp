@@ -21,10 +21,11 @@ public Plugin myinfo =
 DiscordBot gBot;
 
 public void OnPluginStart() {
-	gBot = new DiscordBot("<Bot Token>");
-	
 	RegConsoleCmd("sm_getguilds", Cmd_GetGuilds);
-	RegConsoleCmd("sm_send", Cmd_SendMsg);
+}
+
+public void OnAllPluginsLoaded() {
+	gBot = new DiscordBot("<Bot Token>");
 }
 
 public Action Cmd_GetGuilds(int client, int argc) {
