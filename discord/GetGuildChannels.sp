@@ -29,6 +29,8 @@ public int Native_DiscordBot_GetGuildChannels(Handle plugin, int numParams) {
 public int GetGuildChannelsData(Handle request, bool failure, int offset, int statuscode, any dp) {
 	if(failure || statuscode != 200) {
 		LogError("[DISCORD] Couldn't Retrieve Guilds - Fail %i %i", failure, statuscode);
+		delete request;
+		delete view_as<Handle>(dp);
 		return;
 	}
 	SteamWorks_GetHTTPResponseBodyCallback(request, GetGuildChannelsData_Data, dp);

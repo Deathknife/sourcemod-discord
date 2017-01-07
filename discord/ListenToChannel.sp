@@ -39,6 +39,8 @@ public Action CheckMessageTimer(Handle timer, any dpt) {
 public int OnGetMessage(Handle request, bool failure, int offset, int statuscode, any dp) {
 	if(failure || statuscode != 200) {
 		LogError("[DISCORD] Couldn't Retrieve Guilds - Fail %i %i", failure, statuscode);
+		delete request;
+		delete view_as<Handle>(dp);
 		return;
 	}
 	SteamWorks_GetHTTPResponseBodyCallback(request, OnGetMessage_Data, dp);
