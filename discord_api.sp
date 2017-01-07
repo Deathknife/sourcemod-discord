@@ -16,6 +16,11 @@
 #include "discord/GetGuildChannels.sp"
 #include "discord/ListenToChannel.sp"
 
+//For rate limitation
+Handle hRateLimit = null;
+Handle hRateReset = null;
+Handle hRateLeft = null;
+
 public Plugin myinfo =  {
 	name = "Discord API",
 	author = "Deathknife",
@@ -41,6 +46,9 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 }
 
 public void OnPluginStart() {
+	hRateLeft = new StringMap();
+	hRateReset = new StringMap();
+	hRateLimit = new StringMap();
 }
 
 public int Native_DiscordBot_Token_Get(Handle plugin, int numParams) {
@@ -88,7 +96,7 @@ stock Handle PrepareRequest(DiscordBot bot, char[] url, EHTTPMethod method=k_EHT
 		DataReceived = HTTPDataReceive;
 	}
 	
-	SteamWorks_SetHTTPCallbacks(request, RequestCompleted, INVALID_FUNCTION, DataReceived);
+	SteamWorks_SetHTTPCallbacks(request, RequestCompleted, HeadersReceived, DataReceived);
 	if(hJson != null) delete hJson;
 	
 	return request;
@@ -98,7 +106,51 @@ public int HTTPCompleted(Handle request, bool failure, bool requestSuccessful, E
 }
 
 public int HTTPDataReceive(Handle request, bool failure, int offset, int statuscode, any dp) {
+	//Too many requests
+	if(statuscode == 429) {
+		//DataPack newDP = new DataPack();
+		//WritePackCell(newDP, request);
+		//WritePackCell(newDP, dp);
+		
+		float time = GetRandomFloat(5.0, 10.0);
+		CreateTimer(time, SendRequestAgain, request);
+		return;
+	}
 	delete request;
+}
+
+public int HeadersReceived(Handle request, bool failure, any data, any datapack) {
+	DataPack dp = view_as<DataPack>(datapack);
+	if(failure) {
+		delete dp;
+		return;
+	}
+	
+	char xRateLimit[16];
+	char xRateLeft[16];
+	char xRateReset[32];
+	
+	bool exists = false;
+	
+	exists = SteamWorks_GetHTTPResponseHeaderValue(request, "X-RateLimit-Limit", xRateLimit, sizeof(xRateLimit));
+	exists = SteamWorks_GetHTTPResponseHeaderValue(request, "X-RateLimit-Remaining", xRateLeft, sizeof(xRateLeft));
+	exists = SteamWorks_GetHTTPResponseHeaderValue(request, "X-RateLimit-Reset", xRateReset, sizeof(xRateReset));
+	
+	//Get url
+	char route[128];
+	ResetPack(dp);
+	ReadPackString(dp, route, sizeof(route));
+	delete dp;
+	
+	if(exists) {
+		SetTrieValue(hRateReset, route, StringToInt(xRateReset));
+		SetTrieValue(hRateLeft, route, StringToInt(xRateLeft));
+		SetTrieValue(hRateLimit, route, StringToInt(xRateLimit));
+	}else {
+		SetTrieValue(hRateReset, route, -1);
+		SetTrieValue(hRateLeft, route, -1);
+		SetTrieValue(hRateLimit, route, -1);
+	}
 }
 
 int JsonObjectGetInt(Handle hElement, char[] key) {
@@ -187,4 +239,74 @@ stock DiscordChannel CreateChannelFromJson(Handle hJson) {
 		hIterator = json_object_iter_next(hJson, hIterator);
 	}
 	return Channel;
+}
+
+/*
+This is rate limit imposing for per-route basis. Doesn't support global limit yet.
+ */
+public void DiscordSendRequest(Handle request, const char[] route) {
+	//Check for reset
+	PrintToServer("route: %s", route);
+	int time = GetTime();
+	int resetTime;
+	
+	int defLimit = 0;
+	if(!GetTrieValue(hRateLimit, route, defLimit)) {
+		defLimit = 1;
+	}
+	
+	bool exists = GetTrieValue(hRateReset, route, resetTime);
+	
+	if(!exists) {
+		PrintToServer("does not exist, sending");
+		SetTrieValue(hRateReset, route, GetTime() + 5);
+		SetTrieValue(hRateLeft, route, defLimit - 1);
+		SteamWorks_SendHTTPRequest(request);
+		return;
+	}
+	
+	if(time == -1) {
+		//No x-rate-limit send
+		PrintToServer("no x-rate limit, sending");
+		SteamWorks_SendHTTPRequest(request);
+		return;
+	}
+	
+	if(time > resetTime) {
+		PrintToServer("reseting time %i %i", time, resetTime);
+		SetTrieValue(hRateLeft, route, defLimit - 1);
+		SteamWorks_SendHTTPRequest(request);
+		return;
+	}else {
+		int left;
+		GetTrieValue(hRateLeft, route, left);
+		if(left == 0) {
+			float remaining = float(resetTime) - float(time) + 1.0;
+			Handle dp = new DataPack();
+			WritePackCell(dp, request);
+			WritePackString(dp, route);
+			CreateTimer(remaining, SendRequestAgain, dp);
+			PrintToServer("0 left delaying");
+		}else {
+			left--;
+			PrintToServer("Now there is %i left", left);
+			SetTrieValue(hRateLeft, route, left);
+			SteamWorks_SendHTTPRequest(request);
+		}
+	}
+}
+
+public Handle UrlToDP(char[] url) {
+	DataPack dp = new DataPack();
+	WritePackString(dp, url);
+	return dp;
+}
+
+public Action SendRequestAgain(Handle timer, any dp) {
+	ResetPack(dp);
+	Handle request = ReadPackCell(dp);
+	char route[128];
+	ReadPackString(dp, route, sizeof(route));
+	delete view_as<Handle>(dp);
+	DiscordSendRequest(request, route);
 }

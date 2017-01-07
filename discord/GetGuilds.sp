@@ -16,9 +16,9 @@ public int Native_DiscordBot_GetGuilds(Handle plugin, int numParams) {
 	WritePackFunction(dp, fCallbackAll);
 	WritePackCell(dp, data);
 	
-	SteamWorks_SetHTTPRequestContextValue(request, dp);
+	SteamWorks_SetHTTPRequestContextValue(request, dp, UrlToDP(url));
 	
-	SteamWorks_SendHTTPRequest(request);
+	DiscordSendRequest(request, url);
 }
 
 public int GetGuildsData(Handle request, bool failure, int offset, int statuscode, any dp) {

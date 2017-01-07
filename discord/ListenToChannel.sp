@@ -21,9 +21,12 @@ public void GetMessages(DiscordBot bot, DiscordChannel channel) {
 	WritePackCell(dp, bot);
 	WritePackCell(dp, channel);
 	
-	SteamWorks_SetHTTPRequestContextValue(request, dp);
+	char route[128];
+	FormatEx(route, sizeof(route), "channels/%s", channelID);
 	
-	SteamWorks_SendHTTPRequest(request);
+	SteamWorks_SetHTTPRequestContextValue(request, dp, UrlToDP(route));
+	
+	DiscordSendRequest(request, route);
 }
 
 public Action CheckMessageTimer(Handle timer, any dpt) {

@@ -45,5 +45,7 @@ static void SendMessage(DiscordBot bot, char[] channel, char[] message) {
 	
 	Handle request = PrepareRequest(bot, url, k_EHTTPMethodPOST, hJson);
 	
-	SteamWorks_SendHTTPRequest(request);
+	SteamWorks_SetHTTPRequestContextValue(request, 0, UrlToDP(url));
+	
+	DiscordSendRequest(request, url);
 }
