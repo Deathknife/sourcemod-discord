@@ -246,7 +246,6 @@ This is rate limit imposing for per-route basis. Doesn't support global limit ye
  */
 public void DiscordSendRequest(Handle request, const char[] route) {
 	//Check for reset
-	PrintToServer("route: %s", route);
 	int time = GetTime();
 	int resetTime;
 	
@@ -258,7 +257,6 @@ public void DiscordSendRequest(Handle request, const char[] route) {
 	bool exists = GetTrieValue(hRateReset, route, resetTime);
 	
 	if(!exists) {
-		PrintToServer("does not exist, sending");
 		SetTrieValue(hRateReset, route, GetTime() + 5);
 		SetTrieValue(hRateLeft, route, defLimit - 1);
 		SteamWorks_SendHTTPRequest(request);
@@ -267,13 +265,11 @@ public void DiscordSendRequest(Handle request, const char[] route) {
 	
 	if(time == -1) {
 		//No x-rate-limit send
-		PrintToServer("no x-rate limit, sending");
 		SteamWorks_SendHTTPRequest(request);
 		return;
 	}
 	
 	if(time > resetTime) {
-		PrintToServer("reseting time %i %i", time, resetTime);
 		SetTrieValue(hRateLeft, route, defLimit - 1);
 		SteamWorks_SendHTTPRequest(request);
 		return;
@@ -286,10 +282,8 @@ public void DiscordSendRequest(Handle request, const char[] route) {
 			WritePackCell(dp, request);
 			WritePackString(dp, route);
 			CreateTimer(remaining, SendRequestAgain, dp);
-			PrintToServer("0 left delaying");
 		}else {
 			left--;
-			PrintToServer("Now there is %i left", left);
 			SetTrieValue(hRateLeft, route, left);
 			SteamWorks_SendHTTPRequest(request);
 		}
