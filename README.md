@@ -19,6 +19,22 @@ For full list view `discord.inc` and take a look at `discord_test.sp` for exampl
 ### Note
 > DiscordBot and DiscordChannel are both Handles. Everytime DiscordBot is passed, it's the same Handle to the Bot. This should not be closed unless you don't need that Bot anymore(closing Bots isn't very safe atm, some handles are not closed). DiscordChannel are handles to the Channel. Everytime Channel is passed(unless mentioned otherwise, i.e `OnChannelMessage`) the handle is closed after. If you need to keep the Channel Handle, Clone it. E.g `DiscordChannel newChannel = CloneHandle(Channel);`
 
+
+## Installation
+- Put discord.inc in your include folder
+- Compile discord_api.sp and put it in your sourcemod/plugins folder
+- Install smjansson and SteamWorks extension (Might need to restart server after)
+
+Optional examples:
+- Edit the .sp by replacing `<Bot Token>` with your bot token.
+- Compile and place in sourcemod/plugins
+
+Bot Token can be obtained from:
+
+https://discordapp.com/developers/applications/me
+
+Create a new user and turn into bot account, reveal Token and copy.
+
 &nbsp;
 
 > DiscordBot
