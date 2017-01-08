@@ -7,19 +7,6 @@ http://scooterx3.net/?p=6
 
 (Or paste this into browser -> console: http://pastebin.com/3g2HbTjY )
 
-## Features
-- List all guilds
-- List all Channels for guilds
-- Send Messages to Channel
-- Listen for messages for Channel
-
-## API
-For full list view `discord.inc` and take a look at `discord_test.sp` for examples.
-
-### Note
-> DiscordBot and DiscordChannel are both Handles. Everytime DiscordBot is passed, it's the same Handle to the Bot. This should not be closed unless you don't need that Bot anymore(closing Bots isn't very safe atm, some handles are not closed). DiscordChannel are handles to the Channel. Everytime Channel is passed(unless mentioned otherwise, i.e `OnChannelMessage`) the handle is closed after. If you need to keep the Channel Handle, Clone it. E.g `DiscordChannel newChannel = CloneHandle(Channel);`
-
-
 ## Installation
 - Put discord.inc in your include folder
 - Compile discord_api.sp and put it in your sourcemod/plugins folder
@@ -34,6 +21,20 @@ Bot Token can be obtained from:
 https://discordapp.com/developers/applications/me
 
 Create a new user and turn into bot account, reveal Token and copy.
+
+## Features
+- List all guilds
+- List all Channels for guilds
+- Send Messages to Channel
+- Listen for messages for Channel
+
+## API
+For full list view `discord.inc` and take a look at `discord_test.sp` for examples.
+
+### Note
+> DiscordBot and DiscordChannel are both Handles. Everytime DiscordBot is passed, it's the same Handle to the Bot. This should not be closed unless you don't need that Bot anymore(closing Bots isn't very safe atm, some handles are not closed). DiscordChannel are handles to the Channel. Everytime Channel is passed(unless mentioned otherwise, i.e `OnChannelMessage`) the handle is closed after. If you need to keep the Channel Handle, Clone it. E.g `DiscordChannel newChannel = CloneHandle(Channel);`
+
+
 
 &nbsp;
 
