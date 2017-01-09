@@ -3,10 +3,6 @@
 #define PLUGIN_VERSION "1.00"
 
 #include <sourcemod>
-#include <sdktools>
-#include <sdkhooks>
-#include <cstrike>
-#include <csgocolors>
 #include <discord>
 
 public Plugin myinfo = 

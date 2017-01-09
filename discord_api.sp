@@ -1,11 +1,8 @@
 #pragma semicolon 1
 
-#define PLUGIN_VERSION "0.1.2"
+#define PLUGIN_VERSION "0.1.3"
 
 #include <sourcemod>
-#include <sdktools>
-#include <sdkhooks>
-#include <cstrike>
 #include <discord>
 #include <SteamWorks>
 #include <smjansson>
