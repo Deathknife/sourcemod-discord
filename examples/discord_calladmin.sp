@@ -83,7 +83,7 @@ public void OnClientPutInServer(int client) {
 
 public void GuildList(DiscordBot bot, char[] id, char[] name, char[] icon, bool owner, int permissions, any data) {
 	//Retrieve all channels for the guild
-	PrintToServer("Guild %s", name);
+	//PrintToServer("Guild %s", name);
 	bot.GetGuildChannels(id, ChannelList);
 }
 
@@ -93,10 +93,11 @@ public void ChannelList(DiscordBot bot, char[] guild, DiscordChannel Channel, an
 		//Get name of channel
 		char name[32];
 		Channel.GetName(name, sizeof(name));
-		PrintToServer("Channel name %s", name);
+		//PrintToServer("Channel name %s", name);
 		
 		//Compare name of channel to 'call-admin'
 		if(StrEqual(name, "call-admin", false)) {
+			PrintToServer("Added Call Admin Channel");
 			//Store The Channel
 			
 			//Duplicate the Channel handle as the 'Channel' handle is closed after the forwards are called
