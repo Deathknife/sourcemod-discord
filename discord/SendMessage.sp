@@ -43,9 +43,40 @@ static void SendMessage(DiscordBot bot, char[] channel, char[] message) {
 	char url[64];
 	FormatEx(url, sizeof(url), "channels/%s/messages", channel);
 	
-	Handle request = PrepareRequest(bot, url, k_EHTTPMethodPOST, hJson);
+	Handle request = PrepareRequest(bot, url, k_EHTTPMethodPOST, hJson, GetSendMessageData);
 	
-	SteamWorks_SetHTTPRequestContextValue(request, 0, UrlToDP(url));
+	DataPack dpSafety = new DataPack();
+	WritePackCell(dpSafety, bot);
+	WritePackString(dpSafety, channel);
+	WritePackString(dpSafety, message);
+	
+	SteamWorks_SetHTTPRequestContextValue(request, dpSafety, UrlToDP(url));
 	
 	DiscordSendRequest(request, url);
+}
+
+public int GetSendMessageData(Handle request, bool failure, int offset, int statuscode, any dp) {
+	if(failure || statuscode != 200) {
+		if(statuscode == 429) {
+			ResetPack(dp);
+			DiscordBot bot = ReadPackCell(dp);
+			
+			char channel[32];
+			ReadPackString(dp, channel, sizeof(channel));
+			
+			char message[2048];
+			ReadPackString(dp, message, sizeof(message));
+			delete view_as<Handle>(dp);
+			
+			SendMessage(bot, channel, message);
+			
+			delete request;
+			return;
+		}
+		LogError("[DISCORD] Couldn't Send Message - Fail %i %i", failure, statuscode);
+		delete request;
+		delete view_as<Handle>(dp);
+		return;
+	}
+	delete request;
 }

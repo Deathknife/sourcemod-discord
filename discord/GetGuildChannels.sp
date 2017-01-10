@@ -8,11 +8,6 @@ public int Native_DiscordBot_GetGuildChannels(Handle plugin, int numParams) {
 	Function fCallbackAll = GetNativeCell(4);
 	any data = GetNativeCell(5);
 	
-	char url[64];
-	FormatEx(url, sizeof(url), "guilds/%s/channels", guild);
-	
-	Handle request = PrepareRequest(bot, url, k_EHTTPMethodGET, null, GetGuildChannelsData);
-	
 	DataPack dp = CreateDataPack();
 	WritePackCell(dp, bot);
 	WritePackString(dp, guild);
@@ -21,6 +16,15 @@ public int Native_DiscordBot_GetGuildChannels(Handle plugin, int numParams) {
 	WritePackFunction(dp, fCallbackAll);
 	WritePackCell(dp, data);
 	
+	ThisSendRequest(bot, guild, dp);
+}
+
+static void ThisSendRequest(DiscordBot bot, char[] guild, DataPack dp) {
+	char url[64];
+	FormatEx(url, sizeof(url), "guilds/%s/channels", guild);
+	
+	Handle request = PrepareRequest(bot, url, k_EHTTPMethodGET, null, GetGuildChannelsData);
+	
 	SteamWorks_SetHTTPRequestContextValue(request, dp, UrlToDP(url));
 	
 	DiscordSendRequest(request, url);
@@ -28,7 +32,18 @@ public int Native_DiscordBot_GetGuildChannels(Handle plugin, int numParams) {
 
 public int GetGuildChannelsData(Handle request, bool failure, int offset, int statuscode, any dp) {
 	if(failure || statuscode != 200) {
-		LogError("[DISCORD] Couldn't Retrieve Guilds - Fail %i %i", failure, statuscode);
+		if(statuscode == 429) {
+			ResetPack(dp);
+			DiscordBot bot = ReadPackCell(dp);
+			
+			char guild[32];
+			ReadPackString(dp, guild, sizeof(guild));
+			
+			ThisSendRequest(bot, guild, view_as<DataPack>(dp));
+			
+			delete request;
+		}
+		LogError("[DISCORD] Couldn't Retrieve Guild Channels - Fail %i %i", failure, statuscode);
 		delete request;
 		delete view_as<Handle>(dp);
 		return;

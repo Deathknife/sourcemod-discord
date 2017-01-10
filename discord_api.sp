@@ -1,6 +1,6 @@
 #pragma semicolon 1
 
-#define PLUGIN_VERSION "0.1.3"
+#define PLUGIN_VERSION "0.1.10"
 
 #include <sourcemod>
 #include <discord>
@@ -62,6 +62,7 @@ stock void BuildAuthHeader(Handle request, DiscordBot Bot) {
 	SteamWorks_SetHTTPRequestHeaderValue(request, "Authorization", buffer);
 }
 
+
 stock Handle PrepareRequest(DiscordBot bot, char[] url, EHTTPMethod method=k_EHTTPMethodGET, Handle hJson=null, SteamWorksHTTPDataReceived DataReceived = INVALID_FUNCTION, SteamWorksHTTPRequestCompleted RequestCompleted = INVALID_FUNCTION) {
 	static char stringJson[16384];
 	stringJson[0] = '\0';
@@ -102,16 +103,6 @@ public int HTTPCompleted(Handle request, bool failure, bool requestSuccessful, E
 }
 
 public int HTTPDataReceive(Handle request, bool failure, int offset, int statuscode, any dp) {
-	//Too many requests
-	if(statuscode == 429) {
-		//DataPack newDP = new DataPack();
-		//WritePackCell(newDP, request);
-		//WritePackCell(newDP, dp);
-		
-		float time = GetRandomFloat(5.0, 10.0);
-		CreateTimer(time, SendRequestAgain, request);
-		return;
-	}
 	delete request;
 }
 
