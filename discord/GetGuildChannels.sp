@@ -42,6 +42,7 @@ public int GetGuildChannelsData(Handle request, bool failure, int offset, int st
 			ThisSendRequest(bot, guild, view_as<DataPack>(dp));
 			
 			delete request;
+			return;
 		}
 		LogError("[DISCORD] Couldn't Retrieve Guild Channels - Fail %i %i", failure, statuscode);
 		delete request;
