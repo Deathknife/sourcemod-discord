@@ -16,6 +16,13 @@ public void GetMessages(DiscordBot bot, DiscordChannel channel) {
 	FormatEx(url, sizeof(url), "channels/%s/messages?limit=%i&after=%s", channelID, 100, lastMessage);
 	
 	Handle request = PrepareRequest(bot, url, _, null, OnGetMessage);
+	if(request == null) {
+		DataPack rdp = new DataPack();
+		WritePackCell(rdp, bot);
+		WritePackCell(rdp, channel);
+		CreateTimer(2.0, GetMessagesDelayed, rdp);
+		return;
+	}
 	
 	DataPack dp = new DataPack();
 	WritePackCell(dp, bot);
@@ -27,6 +34,15 @@ public void GetMessages(DiscordBot bot, DiscordChannel channel) {
 	SteamWorks_SetHTTPRequestContextValue(request, dp, UrlToDP(route));
 	
 	DiscordSendRequest(request, route);
+}
+
+public Action GetMessagesDelayed(Handle timer, any data) {
+	DataPack dp = view_as<DataPack>(data);
+	ResetPack(dp);
+	DiscordBot bot = ReadPackCell(dp);
+	DiscordChannel channel = ReadPackCell(dp);
+	delete dp;
+	GetMessages(bot, channel);
 }
 
 public Action CheckMessageTimer(Handle timer, any dpt) {

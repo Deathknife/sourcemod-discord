@@ -19,10 +19,23 @@ static void ThisSendRequest(DiscordBot bot, DataPack dp) {
 	FormatEx(url, sizeof(url), "users/@me/guilds");
 	
 	Handle request = PrepareRequest(bot, url, k_EHTTPMethodGET, null, GetGuildsData);
+	if(request == null) {
+		CreateTimer(2.0, GetGuildsDelayed, dp);
+		return;
+	}
 	
 	SteamWorks_SetHTTPRequestContextValue(request, dp, UrlToDP(url));
 	
 	DiscordSendRequest(request, url);
+}
+
+public Action GetGuildsDelayed(Handle timer, any data) {
+	DataPack dp = view_as<DataPack>(data);
+	ResetPack(dp);
+	
+	DiscordBot bot = ReadPackCell(dp);
+	
+	ThisSendRequest(bot, dp);
 }
 
 public int GetGuildsData(Handle request, bool failure, int offset, int statuscode, any dp) {

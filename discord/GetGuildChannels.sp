@@ -24,10 +24,26 @@ static void ThisSendRequest(DiscordBot bot, char[] guild, DataPack dp) {
 	FormatEx(url, sizeof(url), "guilds/%s/channels", guild);
 	
 	Handle request = PrepareRequest(bot, url, k_EHTTPMethodGET, null, GetGuildChannelsData);
+	if(request == null) {
+		CreateTimer(2.0, GetGuildChannelsDelayed, dp);
+		return;
+	}
 	
 	SteamWorks_SetHTTPRequestContextValue(request, dp, UrlToDP(url));
 	
 	DiscordSendRequest(request, url);
+}
+
+public Action GetGuildChannelsDelayed(Handle timer, any data) {
+	DataPack dp = view_as<DataPack>(data);
+	ResetPack(dp);
+	
+	DiscordBot bot = ReadPackCell(dp);
+	
+	char guild[32];
+	ReadPackString(dp, guild, sizeof(guild));
+	
+	ThisSendRequest(bot, guild, dp);
 }
 
 public int GetGuildChannelsData(Handle request, bool failure, int offset, int statuscode, any dp) {

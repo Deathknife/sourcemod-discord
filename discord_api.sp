@@ -1,6 +1,6 @@
 #pragma semicolon 1
 
-#define PLUGIN_VERSION "0.1.10"
+#define PLUGIN_VERSION "0.1.12"
 
 #include <sourcemod>
 #include <discord>
@@ -75,6 +75,9 @@ stock Handle PrepareRequest(DiscordBot bot, char[] url, EHTTPMethod method=k_EHT
 	FormatEx(turl, sizeof(turl), "https://discordapp.com/api/%s", url);
 	
 	Handle request = SteamWorks_CreateHTTPRequest(method, turl);
+	if(request == null) {
+		return null;
+	}
 	
 	BuildAuthHeader(request, bot);
 	
