@@ -1,6 +1,6 @@
 #pragma semicolon 1
 
-#define PLUGIN_VERSION "0.1.12"
+#define PLUGIN_VERSION "0.1.18"
 
 #include <sourcemod>
 #include <discord>
@@ -37,6 +37,7 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 	CreateNative("DiscordBot.GetGuildChannels", Native_DiscordBot_GetGuildChannels);
 	
 	CreateNative("DiscordChannel.SendMessage", Native_DiscordChannel_SendMessage);
+	CreateNative("DiscordChannel.Destroy", Native_DiscordChannel_Destroy);
 	
 	return APLRes_Success;
 }
@@ -52,6 +53,18 @@ public int Native_DiscordBot_Token_Get(Handle plugin, int numParams) {
 	static char token[196];
 	GetTrieString(bot, "token", token, sizeof(token));
 	SetNativeString(2, token, GetNativeCell(3));
+}
+
+public int Native_DiscordChannel_Destroy(Handle plugin, int numParams) {
+	DiscordChannel Channel = GetNativeCell(1);
+	
+	if(Channel.MessageRequest != null) {
+		delete Channel.MessageRequest;
+	}
+	
+	if(Channel.MessageTimer != null) {
+		KillTimer(Channel.MessageTimer, true);
+	}
 }
 
 stock void BuildAuthHeader(Handle request, DiscordBot Bot) {

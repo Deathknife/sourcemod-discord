@@ -1,9 +1,11 @@
 #pragma semicolon 1
 
-#define PLUGIN_VERSION "1.00"
+#define PLUGIN_VERSION "1.10"
 
 #include <sourcemod>
 #include <discord>
+
+#define BOT_TOKEN "INSERT TOKEN HERE"
 
 public Plugin myinfo = 
 {
@@ -18,16 +20,33 @@ DiscordBot gBot;
 
 public void OnPluginStart() {
 	RegConsoleCmd("sm_getguilds", Cmd_GetGuilds);
+	RegConsoleCmd("sm_recreatebot", Cmd_RecreateBot);
+}
+
+public void OnPluginEnd() {
+	if(gBot != null) {
+		gBot.DestroyData();
+		delete gBot;
+	}
 }
 
 public void OnAllPluginsLoaded() {
-	gBot = new DiscordBot("<Bot Token>");
+	gBot = new DiscordBot(BOT_TOKEN);
 }
 
 public Action Cmd_GetGuilds(int client, int argc) {
 	gBot.GetGuilds(GuildList, GuildListAll, GetClientUserId(client));
 	ReplyToCommand(client, "Trying!");
 	return Plugin_Handled;
+}
+
+public Action Cmd_RecreateBot(int client, int argc) {
+	if(gBot != null) {
+		gBot.DestroyData();
+		delete gBot;
+	}
+	gBot = new DiscordBot(BOT_TOKEN);
+	ReplyToCommand(client, "Recreated");
 }
 
 public void GuildList(DiscordBot bot, char[] id, char[] name, char[] icon, bool owner, int permissions, any data) {

@@ -108,14 +108,41 @@ methodmap DiscordChannel < StringMap {
 		}
 		
 		public set(Handle value) {
-			Handle fForward = null;
-			if(GetTrieValue(this, "callback", fForward)) {
-				delete fForward;
-			}
-			
 			SetTrieValue(this, "callback", value);
 		}
 	}
+	
+	property Handle MessageTimer {
+		public get() {
+			Handle hTimer = null;
+			if(!GetTrieValue(this, "htimer", hTimer)) {
+				return null;
+			}
+			
+			return hTimer;
+		}
+		
+		public set(Handle value) {
+			SetTrieValue(this, "htimer", value);
+		}
+	}
+	
+	property Handle MessageRequest {
+		public get() {
+			Handle hTimer = null;
+			if(!GetTrieValue(this, "hrequest", hTimer)) {
+				return null;
+			}
+			
+			return hTimer;
+		}
+		
+		public set(Handle value) {
+			SetTrieValue(this, "hrequest", value);
+		}
+	}
+	
+	public native void Destroy();
 }
 
 methodmap DiscordBot < StringMap {
@@ -125,11 +152,37 @@ methodmap DiscordBot < StringMap {
 		return view_as<DiscordBot>(mp);
 	}
 	
+	/*
+	Remove any data associated with the bot
+	Still have to delete the handle afterwards
+	 */
+	public void DestroyData() {
+		ArrayList alChannels = null;
+		GetTrieValue(this, "channels", alChannels);
+		
+		if(alChannels != null) {
+			for(int i = 0; i < alChannels.Length; i++) {
+				DiscordChannel tempChannel = alChannels.Get(i);
+				
+				tempChannel.Destroy();
+				
+				if(tempChannel.MessageCallback != null) {
+					delete tempChannel.MessageCallback;
+					tempChannel.MessageCallback = null;
+				}
+					
+				delete tempChannel;
+			}
+			delete alChannels;
+		}
+		SetTrieValue(this, "channels", view_as<Handle>(null));
+	}
+	
 	property float MessageCheckInterval {
 		public get() {
 			float val;
 			if(!GetTrieValue(this, "messageinterval", val)) {
-				return 1.0;
+				return 2.0;
 			}
 			return val;
 		}
@@ -210,13 +263,16 @@ methodmap DiscordBot < StringMap {
 			static char tempID[32];
 			tempChannel.GetID(tempID, sizeof(tempID));
 			if(StrEqual(id, tempID, false)) {
-				channels.Erase(i);
-				delete tempChannel;
-				
 				if(tempChannel.MessageCallback != null) {
 					delete tempChannel.MessageCallback;
 					tempChannel.MessageCallback = null;
 				}
+				
+				tempChannel.Destroy();
+				
+				channels.Erase(i);
+				
+				delete tempChannel;
 			}
 		}
 		//delete channels;
@@ -236,13 +292,15 @@ methodmap DiscordBot < StringMap {
 			static char tempID[32];
 			tempChannel.GetID(tempID, sizeof(tempID));
 			if(StrEqual(ChannelID, tempID, false)) {
-				channels.Erase(i);
-				delete tempChannel;
-				
 				if(tempChannel.MessageCallback != null) {
 					delete tempChannel.MessageCallback;
 					tempChannel.MessageCallback = null;
 				}
+				
+				tempChannel.Destroy();
+				
+				channels.Erase(i);
+				delete tempChannel;
 			}
 		}
 		//delete channels;
@@ -298,4 +356,8 @@ methodmap DiscordBot < StringMap {
 	public native void GetGuilds(DiscordGuildsRetrieve fCallback = INVALID_FUNCTION, DiscordGuildsRetrievedAll fCallbackAll = INVALID_FUNCTION, any data=0);
 	
 	public native void GetGuildChannels(char[] guild, DiscordGuildChannelsRetrieve fCallback = INVALID_FUNCTION, DiscordGuildChannelsRetrieveAll fCallbackAll = INVALID_FUNCTION, any data=0);
+}
+
+methodmap DiscordWebHook < StringMap {
+	//
 }

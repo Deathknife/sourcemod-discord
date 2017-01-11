@@ -27,12 +27,14 @@ public void GetMessages(DiscordBot bot, DiscordChannel channel) {
 	DataPack dp = new DataPack();
 	WritePackCell(dp, bot);
 	WritePackCell(dp, channel);
+	WritePackString(dp, channelID);
 	
 	char route[128];
 	FormatEx(route, sizeof(route), "channels/%s", channelID);
 	
 	SteamWorks_SetHTTPRequestContextValue(request, dp, UrlToDP(route));
 	
+	channel.MessageRequest = request;
 	DiscordSendRequest(request, route);
 }
 
@@ -52,6 +54,8 @@ public Action CheckMessageTimer(Handle timer, any dpt) {
 	DiscordChannel Channel = ReadPackCell(dp);
 	delete dp;
 	
+	Channel.MessageTimer = null;
+	
 	GetMessages(Bot, Channel);
 }
 
@@ -62,6 +66,7 @@ public int OnGetMessage(Handle request, bool failure, int offset, int statuscode
 			DiscordBot Bot = ReadPackCell(dp);
 			DiscordChannel Channel = ReadPackCell(dp);
 			
+			Channel.MessageRequest = null;
 			GetMessages(Bot, Channel);
 			
 			delete view_as<Handle>(dp);
@@ -73,6 +78,7 @@ public int OnGetMessage(Handle request, bool failure, int offset, int statuscode
 		delete view_as<Handle>(dp);
 		return;
 	}
+
 	SteamWorks_GetHTTPResponseBodyCallback(request, OnGetMessage_Data, dp);
 	delete request;
 }
@@ -82,12 +88,16 @@ public int OnGetMessage_Data(const char[] data, any dpt) {
 	ResetPack(dp);
 	DiscordBot Bot = ReadPackCell(dp);
 	DiscordChannel Channel = ReadPackCell(dp);
+	char chID[32];
+	ReadPackString(dp, chID, sizeof(chID));
 	//delete dp;
 	
-	if(!Bot.IsListeningToChannel(Channel)) {
+	if(!Bot.IsListeningToChannelID(chID)) {
 		delete dp;
 		return;
 	}
+	
+	Channel.MessageRequest = null;
 	
 	Handle hJson = json_load(data);
 	
@@ -154,7 +164,7 @@ public int OnGetMessage_Data(const char[] data, any dpt) {
 		}
 	}
 	
-	CreateTimer(Bot.MessageCheckInterval, CheckMessageTimer, dp);
+	Channel.MessageTimer = CreateTimer(Bot.MessageCheckInterval, CheckMessageTimer, dp);
 	
 	delete hJson;
 }
