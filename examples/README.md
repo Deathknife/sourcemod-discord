@@ -1,5 +1,5 @@
 # discord_test.sp
-On the command: `sm_getguilds` / `!guilds` the plugin will list all guilds and channels in the client console. It will hook into every channel and print any messages in discord channel to the server console. If the message is `Ping` it will reply with `Pong`.
+On the command: `sm_getguilds` / `!getguilds` the plugin will list all guilds and channels in the client console. It will hook into every channel and print any messages in discord channel to the server console. If the message is `Ping` it will reply with `Pong`. `sm_recreatebot` will delete the bot and create it again(for testing purposes)
 
 Not recommended to use this plugin on live server.
 
