@@ -101,4 +101,5 @@ public int GetSendMessageData(Handle request, bool failure, int offset, int stat
 		return;
 	}
 	delete request;
+	delete view_as<Handle>(dp);
 }
