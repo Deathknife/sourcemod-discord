@@ -153,6 +153,12 @@ public int GetGuildsData_Data(const char[] data, any datapack) {
 		delete alIcon;
 		delete alOwner;
 		delete alPermissions;
+		
+		delete fForwardAll;
+	}
+	
+	if(fForward != INVALID_HANDLE) {
+		delete fForward;
 	}
 	
 	delete hJson;

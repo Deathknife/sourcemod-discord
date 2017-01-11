@@ -143,6 +143,11 @@ public int GetGuildChannelsData_Data(const char[] data, any datapack) {
 		}
 		
 		delete alChannels;
+		delete fForwardAll;
+	}
+	
+	if(fForward != INVALID_HANDLE) {
+		delete fForward;
 	}
 	
 	delete hJson;
