@@ -359,5 +359,125 @@ methodmap DiscordBot < StringMap {
 }
 
 methodmap DiscordWebHook < StringMap {
-	//
+	public DiscordWebHook(char[] url) {
+		StringMap mp = new StringMap();
+		SetTrieString(mp, "url", url);
+		return view_as<DiscordWebHook>(mp);
+	}
+	
+	public void GetUrl(char[] buffer, int maxlength) {
+		GetTrieString(this, "url", buffer, maxlength);
+	}
+	
+	property bool SlackMode {
+		public get() {
+			bool value = false;
+			if(!GetTrieValue(this, "slack", value)) {
+				return false;
+			}
+			
+			return value;
+		}
+		
+		public set(bool value) {
+			SetTrieValue(this, "slack", value);
+		}
+	}
+	
+	public native void AddField(char[] title, char[] value, bool short);
+	
+	public native void DeleteFields();
+	
+	/*
+	Handle to JSON array for fields
+	 */
+	property Handle FieldHandle {
+		public get() {
+			Handle value = null;
+			if(!GetTrieValue(this, "FieldHandle", value)) {
+				return null;
+			}
+			return value;
+		}
+		
+		public set(Handle value) {
+			SetTrieValue(this, "FieldHandle", value);
+		}
+	}
+	
+	property bool tts {
+		public get() {
+			bool value = false;
+			if(!GetTrieValue(this, "tts", value)) {
+				return false;
+			}
+			
+			return value;
+		}
+		
+		public set(bool value) {
+			SetTrieValue(this, "tts", value);
+		}
+	}
+	
+	public bool GetUsername(char[] buffer, int maxlength) {
+		return GetTrieString(this, "username", buffer, maxlength);
+	}
+	
+	public void SetUsername(char[] name) {
+		SetTrieString(this, "username", name);
+	}
+	
+	public bool GetColor(char[] buffer, int maxlength) {
+		return GetTrieString(this, "color", buffer, maxlength);
+	}
+	
+	public void SetColor(char[] color) {
+		SetTrieString(this, "color", color);
+	}
+	
+	public bool GetTitle(char[] buffer, int maxlength) {
+		return GetTrieString(this, "title", buffer, maxlength);
+	}
+	
+	public void SetTitle(char[] title) {
+		SetTrieString(this, "title", title);
+	}
+	
+	public bool GetContent(char[] buffer, int maxlength) {
+		return GetTrieString(this, "content", buffer, maxlength);
+	}
+	
+	public void SetContent(char[] content) {
+		SetTrieString(this, "content", content);
+	}
+	
+	/*property Handle OnComplete {
+		public get() {
+			Handle fForward = null;
+			if(!GetTrieValue(this, "callback", fForward)) {
+				return null;
+			}
+			
+			return fForward;
+		}
+		
+		public set(Handle value) {
+			SetTrieValue(this, "callback", value);
+			SetTrieValue(this, "plugin", GetMyHandle());
+		}
+	}
+	
+	property Handle CallbackPlugin {
+		public get() {
+			Handle value = null;
+			if(!GetTrieValue(this, "plugin", value)) {
+				return null;
+			}
+			
+			return value;
+		}
+	}*/
+	
+	public native void Send();
 }

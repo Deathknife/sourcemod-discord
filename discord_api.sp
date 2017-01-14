@@ -1,6 +1,6 @@
 #pragma semicolon 1
 
-#define PLUGIN_VERSION "0.1.18"
+#define PLUGIN_VERSION "0.1.38"
 
 #include <sourcemod>
 #include <discord>
@@ -11,6 +11,7 @@
 #include "discord/GetGuilds.sp"
 #include "discord/GetGuildChannels.sp"
 #include "discord/ListenToChannel.sp"
+#include "discord/SendWebHook.sp"
 
 //For rate limitation
 Handle hRateLimit = null;
@@ -38,6 +39,10 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 	
 	CreateNative("DiscordChannel.SendMessage", Native_DiscordChannel_SendMessage);
 	CreateNative("DiscordChannel.Destroy", Native_DiscordChannel_Destroy);
+	
+	CreateNative("DiscordWebHook.Send", Native_DiscordWebHook_Send);
+	CreateNative("DiscordWebHook.AddField", Native_DiscordWebHook_AddField);
+	CreateNative("DiscordWebHook.DeleteFields", Native_DiscordWebHook_DeleteFields);
 	
 	return APLRes_Success;
 }
@@ -92,7 +97,46 @@ stock Handle PrepareRequest(DiscordBot bot, char[] url, EHTTPMethod method=k_EHT
 		return null;
 	}
 	
-	BuildAuthHeader(request, bot);
+	if(bot != null) {
+		BuildAuthHeader(request, bot);
+	}
+	
+	SteamWorks_SetHTTPRequestRawPostBody(request, "application/json; charset=UTF-8", stringJson, strlen(stringJson));
+	
+	SteamWorks_SetHTTPRequestNetworkActivityTimeout(request, 30);
+	
+	if(RequestCompleted == INVALID_FUNCTION) {
+		//I had some bugs previously where it wouldn't send request and return code 0 if I didn't set request completed.
+		//This is just a safety then, my issue could have been something else and I will test more later on
+		RequestCompleted = HTTPCompleted;
+	}
+	
+	if(DataReceived == INVALID_FUNCTION) {
+		//Need to close the request handle
+		DataReceived = HTTPDataReceive;
+	}
+	
+	SteamWorks_SetHTTPCallbacks(request, RequestCompleted, HeadersReceived, DataReceived);
+	if(hJson != null) delete hJson;
+	
+	return request;
+}
+
+stock Handle PrepareRequestRaw(DiscordBot bot, char[] url, EHTTPMethod method=k_EHTTPMethodGET, Handle hJson=null, SteamWorksHTTPDataReceived DataReceived = INVALID_FUNCTION, SteamWorksHTTPRequestCompleted RequestCompleted = INVALID_FUNCTION) {
+	static char stringJson[16384];
+	stringJson[0] = '\0';
+	if(hJson != null) {
+		json_dump(hJson, stringJson, sizeof(stringJson), 0, true);
+	}
+	
+	Handle request = SteamWorks_CreateHTTPRequest(method, url);
+	if(request == null) {
+		return null;
+	}
+	
+	if(bot != null) {
+		BuildAuthHeader(request, bot);
+	}
 	
 	SteamWorks_SetHTTPRequestRawPostBody(request, "application/json; charset=UTF-8", stringJson, strlen(stringJson));
 	
