@@ -21,6 +21,7 @@ DiscordBot gBot;
 public void OnPluginStart() {
 	RegConsoleCmd("sm_getguilds", Cmd_GetGuilds);
 	RegConsoleCmd("sm_recreatebot", Cmd_RecreateBot);
+	RegConsoleCmd("sm_webhooktest", Cmd_Webhook);
 }
 
 public void OnPluginEnd() {
@@ -33,6 +34,28 @@ public void OnPluginEnd() {
 public void OnAllPluginsLoaded() {
 	gBot = new DiscordBot(BOT_TOKEN);
 }
+
+public Action Cmd_Webhook(int client, int argc) {
+	DiscordWebHook hook = new DiscordWebHook("https://ptb.discordapp.com/api/webhooks/265660968086929419/z3_F8CEGNu1Wtdygv4v0Pg4YRBA8QxgmzFKqjkEleSf2BOuQ8Xz7Ub05ku2j-O2vofy7");
+	hook.SlackMode = true;
+	
+	hook.SetUsername("Server");
+	hook.SetColor("#ff2222");
+	hook.SetTitle("Testing WebHook");
+	hook.SetContent("@here");
+	hook.AddField("Field1", "Test1", true);
+	hook.AddField("abc def", "deef", true);
+	hook.Send();
+	delete hook;
+	
+	hook = new DiscordWebHook("https://ptb.discordapp.com/api/webhooks/265660968086929419/z3_F8CEGNu1Wtdygv4v0Pg4YRBA8QxgmzFKqjkEleSf2BOuQ8Xz7Ub05ku2j-O2vofy7");
+	hook.SetUsername("Testing");
+	hook.SlackMode = false;
+	hook.SetContent("Testing 1 2 3");
+	hook.Send();
+	delete hook;
+}
+
 
 public Action Cmd_GetGuilds(int client, int argc) {
 	gBot.GetGuilds(GuildList, GuildListAll, GetClientUserId(client));
