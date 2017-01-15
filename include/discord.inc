@@ -20,6 +20,8 @@ typeset OnChannelMessage {
 	function void(DiscordBot bot, DiscordChannel channel, const char[] message, const char[] messageID, const char[] userID, const char[] userName, const char[] discriminator, Handle hJson);
 };
 
+typedef OnGetReactions = function void (DiscordBot bot, ArrayList Users, char[] channelID, const char[] messageID, const char[] emoji, any data);
+
 methodmap DiscordChannel < StringMap {
 	public DiscordChannel() {
 		StringMap mp = new StringMap();
@@ -347,6 +349,45 @@ methodmap DiscordBot < StringMap {
 		this.StartTimer(newChannel);
 	}
 	
+	
+	public native void AddReactionID(char[] channel, char[] messageid, char[] emoji);
+	
+	public void AddReaction(DiscordChannel channel, char[] messageid, char[] emoji) {
+		char channelid[64];
+		channel.GetID(channelid, sizeof(channelid));
+		this.AddReactionID(channelid, messageid, emoji);
+	}
+	
+	public native void DeleteReactionID(char[] channel, char[] messageid, char[] emoji, char[] user);
+	
+	public void DeleteReaction(DiscordChannel channel, char[] messageid, char[] emoji, char[] user) {
+		char chid[64];
+		channel.GetID(chid, sizeof(chid));
+		this.DeleteReactionID(chid, messageid, emoji, user);
+	}
+	
+	public void DeleteReactionSelf(DiscordChannel channel, char[] messageid, char[] emoji) {
+		this.DeleteReaction(channel, messageid, emoji, "@me");
+	}
+	public void DeleteReactionAll(DiscordChannel channel, char[] messageid, char[] emoji) {
+		this.DeleteReaction(channel, messageid, emoji, "@all");
+	}
+	
+	public void DeleteReactionSelfID(char[] channel, char[] messageid, char[] emoji) {
+		this.DeleteReactionID(channel, messageid, emoji, "@me");
+	}
+	public void DeleteReactionAllID(char[] channel, char[] messageid, char[] emoji) {
+		this.DeleteReactionID(channel, messageid, emoji, "@all");
+	}
+	
+	public native void GetReactionID(char[] channel, char[] messageid, char[] emoji, OnGetReactions fCallback=INVALID_FUNCTION, any data=0);
+	
+	public void GetReaction(DiscordChannel channel, char[] messageid, char[] emoji, OnGetReactions fCallback=INVALID_FUNCTION, any data=0) {
+		char id[64];
+		channel.GetID(id, sizeof(id));
+		this.GetReactionID(id, messageid, emoji, fCallback, data);
+	}
+	
 	public native void GetToken(char[] token, int maxlength);
 	
 	public native void SendMessage(DiscordChannel channel, char[] message);
@@ -480,4 +521,34 @@ methodmap DiscordWebHook < StringMap {
 	}*/
 	
 	public native void Send();
+}
+
+/*
+{
+    "id": "80351110224678912",
+    "username": "Nelly",
+    "discriminator": "1337",
+    "avatar": "8342729096ea3675442027381ff50dfe",
+    "verified": true,
+    "email": "nelly@discordapp.com"
+}
+ */
+//It's a JSON Handle with the above info
+methodmap DiscordUser < Handle {
+	public native void GetID(char[] buffer, int maxlength);
+	
+	public native void GetUsername(char[] buffer, int maxlength);
+	
+	public native void GetDiscriminator(char[] buffer, int maxlength);
+	public int GetDiscriminatorInt() {
+		char buffer[16];
+		this.GetDiscriminator(buffer, sizeof(buffer));
+		return StringToInt(buffer);
+	}
+	
+	public native void GetAvatar(char[] buffer, int maxlength);
+	
+	public native bool IsVerified();
+	
+	public native void GetEmail(char[] buffer, int maxlength);
 }

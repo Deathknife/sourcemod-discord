@@ -1,6 +1,6 @@
 #pragma semicolon 1
 
-#define PLUGIN_VERSION "0.1.38"
+#define PLUGIN_VERSION "0.1.48"
 
 #include <sourcemod>
 #include <discord>
@@ -12,6 +12,8 @@
 #include "discord/GetGuildChannels.sp"
 #include "discord/ListenToChannel.sp"
 #include "discord/SendWebHook.sp"
+#include "discord/reactions.sp"
+#include "discord/UserObject.sp"
 
 //For rate limitation
 Handle hRateLimit = null;
@@ -37,12 +39,23 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 	CreateNative("DiscordBot.GetGuilds", Native_DiscordBot_GetGuilds);
 	CreateNative("DiscordBot.GetGuildChannels", Native_DiscordBot_GetGuildChannels);
 	
+	CreateNative("DiscordBot.AddReactionID", Native_DiscordBot_AddReaction);
+	CreateNative("DiscordBot.DeleteReactionID", Native_DiscordBot_DeleteReaction);
+	CreateNative("DiscordBot.GetReactionID", Native_DiscordBot_GetReaction);
+	
 	CreateNative("DiscordChannel.SendMessage", Native_DiscordChannel_SendMessage);
 	CreateNative("DiscordChannel.Destroy", Native_DiscordChannel_Destroy);
 	
 	CreateNative("DiscordWebHook.Send", Native_DiscordWebHook_Send);
 	CreateNative("DiscordWebHook.AddField", Native_DiscordWebHook_AddField);
 	CreateNative("DiscordWebHook.DeleteFields", Native_DiscordWebHook_DeleteFields);
+	
+	CreateNative("DiscordUser.GetID", Native_DiscordUser_GetID);
+	CreateNative("DiscordUser.GetUsername", Native_DiscordUser_GetUsername);
+	CreateNative("DiscordUser.GetDiscriminator", Native_DiscordUser_GetDiscriminator);
+	CreateNative("DiscordUser.GetAvatar", Native_DiscordUser_GetAvatar);
+	CreateNative("DiscordUser.IsVerified", Native_DiscordUser_IsVerified);
+	CreateNative("DiscordUser.GetEmail", Native_DiscordUser_GetEmail);
 	
 	return APLRes_Success;
 }
