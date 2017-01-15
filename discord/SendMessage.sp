@@ -79,7 +79,7 @@ public Action SendMessageDelayed(Handle timer, any data) {
 
 public int GetSendMessageData(Handle request, bool failure, int offset, int statuscode, any dp) {
 	if(failure || statuscode != 200) {
-		if(statuscode == 429) {
+		if(statuscode == 429 || statuscode == 500) {
 			ResetPack(dp);
 			DiscordBot bot = ReadPackCell(dp);
 			

@@ -102,7 +102,7 @@ public Action SendWebHookDelayed(Handle timer, any data) {
 
 public SendWebHookReceiveData(Handle request, bool failure, int offset, int statuscode, any dp) {
 	if(failure || statuscode != 200) {
-		if(statuscode == 429) {
+		if(statuscode == 429 || statuscode == 500) {
 			
 			SendWebHook(view_as<DiscordWebHook>(dp));
 			

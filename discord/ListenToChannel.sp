@@ -61,7 +61,7 @@ public Action CheckMessageTimer(Handle timer, any dpt) {
 
 public int OnGetMessage(Handle request, bool failure, int offset, int statuscode, any dp) {
 	if(failure || statuscode != 200) {
-		if(statuscode == 429) {
+		if(statuscode == 429 || statuscode == 500) {
 			ResetPack(dp);
 			DiscordBot Bot = ReadPackCell(dp);
 			DiscordChannel Channel = ReadPackCell(dp);
