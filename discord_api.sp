@@ -1,6 +1,6 @@
 #pragma semicolon 1
 
-#define PLUGIN_VERSION "0.1.50"
+#define PLUGIN_VERSION "0.1.51"
 
 #include <sourcemod>
 #include <discord>
@@ -57,6 +57,7 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 	CreateNative("DiscordUser.GetAvatar", Native_DiscordUser_GetAvatar);
 	CreateNative("DiscordUser.IsVerified", Native_DiscordUser_IsVerified);
 	CreateNative("DiscordUser.GetEmail", Native_DiscordUser_GetEmail);
+	CreateNative("DiscordUser.IsBot", Native_DiscordUser_IsBot);
 	
 	CreateNative("DiscordMessage.GetID", Native_DiscordMessage_GetID);
 	CreateNative("DiscordMessage.IsPinned", Native_DiscordMessage_IsPinned);

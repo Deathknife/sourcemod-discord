@@ -551,6 +551,8 @@ methodmap DiscordUser < Handle {
 	public native bool IsVerified();
 	
 	public native void GetEmail(char[] buffer, int maxlength);
+	
+	public native bool IsBot();
 }
 
 /*
