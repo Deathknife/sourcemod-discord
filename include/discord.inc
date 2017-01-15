@@ -552,3 +552,19 @@ methodmap DiscordUser < Handle {
 	
 	public native void GetEmail(char[] buffer, int maxlength);
 }
+
+/*
+
+{"timestamp": "2017-01-15T20:26:35.353000+00:00", "mention_everyone": false, "id": "270287641155469313", "pinned": false, "edited_timestamp": null, "author": {"username": "DK-Bot", "discriminator": "6274", "bot": true, "id": "186256454863290369", "avatar": null}, "mention_roles": [], "content": "ab", "channel_id": "229677130483499008", "mentions": [], "type": 0}
+ */
+methodmap DiscordMessage < Handle {
+	public native void GetID(char[] buffer, int maxlength);
+	
+	public native bool IsPinned();
+	
+	public native DiscordUser GetAuthor();
+	
+	public native void GetContent(char[] buffer, int maxlength);
+	
+	public native void GetChannelID(char[] buffer, int maxlength);
+}

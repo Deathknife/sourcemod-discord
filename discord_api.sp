@@ -1,6 +1,6 @@
 #pragma semicolon 1
 
-#define PLUGIN_VERSION "0.1.48"
+#define PLUGIN_VERSION "0.1.50"
 
 #include <sourcemod>
 #include <discord>
@@ -14,6 +14,7 @@
 #include "discord/SendWebHook.sp"
 #include "discord/reactions.sp"
 #include "discord/UserObject.sp"
+#include "discord/MessageObject.sp"
 
 //For rate limitation
 Handle hRateLimit = null;
@@ -56,6 +57,12 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 	CreateNative("DiscordUser.GetAvatar", Native_DiscordUser_GetAvatar);
 	CreateNative("DiscordUser.IsVerified", Native_DiscordUser_IsVerified);
 	CreateNative("DiscordUser.GetEmail", Native_DiscordUser_GetEmail);
+	
+	CreateNative("DiscordMessage.GetID", Native_DiscordMessage_GetID);
+	CreateNative("DiscordMessage.IsPinned", Native_DiscordMessage_IsPinned);
+	CreateNative("DiscordMessage.GetAuthor", Native_DiscordMessage_GetAuthor);
+	CreateNative("DiscordMessage.GetContent", Native_DiscordMessage_GetContent);
+	CreateNative("DiscordMessage.GetChannelID", Native_DiscordMessage_GetChannelID);
 	
 	return APLRes_Success;
 }
