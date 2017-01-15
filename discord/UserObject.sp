@@ -35,7 +35,7 @@ public int Native_DiscordUser_GetEmail(Handle plugin, int numParams) {
 
 public int Native_DiscordUser_IsVerified(Handle plugin, int numParams) {
 	Handle hJson = GetNativeCell(1);
-	return JsonObjectGetBool(hJson, "id");
+	return JsonObjectGetBool(hJson, "verified");
 }
 
 public int Native_DiscordUser_IsBot(Handle plugin, int numParams) {
