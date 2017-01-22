@@ -5,7 +5,15 @@ public int Native_DiscordBot_SendMessageToChannel(Handle plugin, int numParams) 
 	GetNativeString(2, channel, sizeof(channel));
 	GetNativeString(3, message, sizeof(message));
 	
-	SendMessage(bot, channel, message);
+	Function fCallback = GetNativeCell(4);
+	any data = GetNativeCell(5);
+	Handle fForward = null;
+	if(fCallback != INVALID_FUNCTION) {
+		fForward = CreateForward(ET_Ignore, Param_Cell, Param_Cell, Param_Cell, Param_Cell);
+		AddToForward(fForward, plugin, fCallback);
+	}
+	
+	SendMessage(bot, channel, message, fForward, data);
 }
 
 public int Native_DiscordBot_SendMessage(Handle plugin, int numParams) {
@@ -18,7 +26,15 @@ public int Native_DiscordBot_SendMessage(Handle plugin, int numParams) {
 	static char message[2048];
 	GetNativeString(3, message, sizeof(message));
 	
-	SendMessage(bot, channelID, message);
+	Function fCallback = GetNativeCell(4);
+	any data = GetNativeCell(5);
+	Handle fForward = null;
+	if(fCallback != INVALID_FUNCTION) {
+		fForward = CreateForward(ET_Ignore, Param_Cell, Param_Cell, Param_Cell, Param_Cell);
+		AddToForward(fForward, plugin, fCallback);
+	}
+	
+	SendMessage(bot, channelID, message, fForward, data);
 }
 
 public int Native_DiscordChannel_SendMessage(Handle plugin, int numParams) {
@@ -32,10 +48,18 @@ public int Native_DiscordChannel_SendMessage(Handle plugin, int numParams) {
 	static char message[2048];
 	GetNativeString(3, message, sizeof(message));
 	
-	SendMessage(bot, channelID, message);
+	Function fCallback = GetNativeCell(4);
+	any data = GetNativeCell(5);
+	Handle fForward = null;
+	if(fCallback != INVALID_FUNCTION) {
+		fForward = CreateForward(ET_Ignore, Param_Cell, Param_Cell, Param_Cell, Param_Cell);
+		AddToForward(fForward, plugin, fCallback);
+	}
+	
+	SendMessage(bot, channelID, message, fForward, data);
 }
 
-static void SendMessage(DiscordBot bot, char[] channel, char[] message) {
+static void SendMessage(DiscordBot bot, char[] channel, char[] message, Handle fForward, any data) {
 	Handle hJson = json_object();
 	
 	json_object_set_new(hJson, "content", json_string(message));
@@ -47,6 +71,8 @@ static void SendMessage(DiscordBot bot, char[] channel, char[] message) {
 	WritePackCell(dpSafety, bot);
 	WritePackString(dpSafety, channel);
 	WritePackString(dpSafety, message);
+	WritePackCell(dpSafety, fForward);
+	WritePackCell(dpSafety, data);
 	
 	Handle request = PrepareRequest(bot, url, k_EHTTPMethodPOST, hJson, GetSendMessageData);
 	if(request == null) {
@@ -72,9 +98,12 @@ public Action SendMessageDelayed(Handle timer, any data) {
 	char message[2048];
 	ReadPackString(dp, message, sizeof(message));
 	
+	Handle fForward = ReadPackCell(dp);
+	any dataa = ReadPackCell(dp);
+	
 	delete dp;
 	
-	SendMessage(bot, channel, message);
+	SendMessage(bot, channel, message, fForward, dataa);
 }
 
 public int GetSendMessageData(Handle request, bool failure, int offset, int statuscode, any dp) {
@@ -88,9 +117,13 @@ public int GetSendMessageData(Handle request, bool failure, int offset, int stat
 			
 			char message[2048];
 			ReadPackString(dp, message, sizeof(message));
+			
+			Handle fForward = ReadPackCell(dp);
+			any data = ReadPackCell(dp);
+	
 			delete view_as<Handle>(dp);
 			
-			SendMessage(bot, channel, message);
+			SendMessage(bot, channel, message, fForward, data);
 			
 			delete request;
 			return;

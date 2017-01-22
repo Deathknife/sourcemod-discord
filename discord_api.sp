@@ -1,6 +1,6 @@
 #pragma semicolon 1
 
-#define PLUGIN_VERSION "0.1.51"
+#define PLUGIN_VERSION "0.1.62"
 
 #include <sourcemod>
 #include <discord>
@@ -210,8 +210,13 @@ public int HeadersReceived(Handle request, bool failure, any data, any datapack)
 	ReadPackString(dp, route, sizeof(route));
 	delete dp;
 	
+	int reset = StringToInt(xRateReset);
+	if(reset > GetTime() + 3) {
+		reset = GetTime() + 3;
+	}
+	
 	if(exists) {
-		SetTrieValue(hRateReset, route, StringToInt(xRateReset));
+		SetTrieValue(hRateReset, route, reset);
 		SetTrieValue(hRateLeft, route, StringToInt(xRateLeft));
 		SetTrieValue(hRateLimit, route, StringToInt(xRateLimit));
 	}else {

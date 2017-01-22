@@ -22,13 +22,15 @@ typeset OnChannelMessage {
 
 typedef OnGetReactions = function void (DiscordBot bot, ArrayList Users, char[] channelID, const char[] messageID, const char[] emoji, any data);
 
+typedef OnMessageSent = function void(DiscordBot bot, char[] channel, DiscordMessage message, any data);
+
 methodmap DiscordChannel < StringMap {
 	public DiscordChannel() {
 		StringMap mp = new StringMap();
 		return view_as<DiscordChannel>(mp);
 	}
 	
-	public native void SendMessage(DiscordBot Bot, char[] message);
+	public native void SendMessage(DiscordBot Bot, char[] message, OnMessageSent fCallback=INVALID_FUNCTION, any data=0);
 
 	public void GetGuildID(char[] buffer, int maxlength) {
 		GetTrieString(this, "guild_id", buffer, maxlength);
@@ -390,9 +392,9 @@ methodmap DiscordBot < StringMap {
 	
 	public native void GetToken(char[] token, int maxlength);
 	
-	public native void SendMessage(DiscordChannel channel, char[] message);
+	public native void SendMessage(DiscordChannel channel, char[] message, OnMessageSent fCallback=INVALID_FUNCTION, any data=0);
 	
-	public native void SendMessageToChannelID(char[] channel, char[] message);
+	public native void SendMessageToChannelID(char[] channel, char[] message, OnMessageSent fCallback=INVALID_FUNCTION, any data=0);
 	
 	public native void GetGuilds(DiscordGuildsRetrieve fCallback = INVALID_FUNCTION, DiscordGuildsRetrievedAll fCallbackAll = INVALID_FUNCTION, any data=0);
 	

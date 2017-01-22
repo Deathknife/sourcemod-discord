@@ -18,7 +18,7 @@ public int Native_DiscordMessage_GetAuthor(Handle plugin, int numParams) {
 	DiscordUser user = view_as<DiscordUser>(CloneHandle(hAuthor, plugin));
 	delete hAuthor;
 	
-	return user;
+	return _:user;
 }
 
 public int Native_DiscordMessage_GetContent(Handle plugin, int numParams) {
