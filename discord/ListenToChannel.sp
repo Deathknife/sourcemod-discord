@@ -136,7 +136,7 @@ public int OnGetMessage_Data(const char[] data, any dpt) {
 			JsonObjectGetString(hAuthor, "id", userID, sizeof(userID));
 			
 			char name[32];
-			char discriminator[4];
+			char discriminator[5];
 			
 			JsonObjectGetString(hAuthor, "username", name, sizeof(name));
 			JsonObjectGetString(hAuthor, "discriminator", discriminator, sizeof(discriminator));
