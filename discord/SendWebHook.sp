@@ -79,7 +79,11 @@ public void SendWebHook(DiscordWebHook hook) {
 	
 	static char content[2048];
 	if(hook.GetContent(content, sizeof(content))) {
-		json_object_set_new(hJson, "content", json_string(content));
+		if(hook.SlackMode) {
+			json_object_set_new(hJson, "content", json_string(content));
+		}else {
+			json_object_set_new(hJson, "text", json_string(content));
+		}
 	}
 	
 	//Send
