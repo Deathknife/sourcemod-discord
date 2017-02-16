@@ -9,8 +9,8 @@ public int Native_DiscordWebHook_AddField(Handle plugin, int numParams) {
 		hook.FieldHandle = json_array();
 	}
 	
-	char title[32];
-	char value[64];
+	char title[128];
+	char value[128];
 	bool short;
 	
 	GetNativeString(2, title, sizeof(title));
@@ -47,7 +47,7 @@ public void SendWebHook(DiscordWebHook hook) {
 		hAttachments = json_object();
 	}
 	
-	char username[32];
+	char username[128];
 	if(hook.GetUsername(username, sizeof(username))) {
 		json_object_set_new(hJson, "username", json_string(username));
 	}
@@ -67,7 +67,7 @@ public void SendWebHook(DiscordWebHook hook) {
 			json_object_set_new(hAttachments, "color", json_string(color));
 		}
 		
-		char title[32];
+		char title[128];
 		if(hook.GetTitle(title, sizeof(title))) {
 			json_object_set_new(hAttachments, "title", json_string(title));
 		}
