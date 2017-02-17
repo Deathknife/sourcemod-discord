@@ -1,12 +1,13 @@
 #pragma semicolon 1
 
-#define PLUGIN_VERSION "0.1.62"
+#define PLUGIN_VERSION "0.1.74"
 
 #include <sourcemod>
 #include <discord>
 #include <SteamWorks>
 #include <smjansson>
 
+//#include "discord/DiscordRequest.sp"
 #include "discord/SendMessage.sp"
 #include "discord/GetGuilds.sp"
 #include "discord/GetGuildChannels.sp"
@@ -64,6 +65,8 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 	CreateNative("DiscordMessage.GetAuthor", Native_DiscordMessage_GetAuthor);
 	CreateNative("DiscordMessage.GetContent", Native_DiscordMessage_GetContent);
 	CreateNative("DiscordMessage.GetChannelID", Native_DiscordMessage_GetChannelID);
+	
+	RegPluginLibrary("discord-api");
 	
 	return APLRes_Success;
 }
@@ -242,9 +245,9 @@ int JsonObjectGetInt(Handle hElement, char[] key) {
 	return value;
 }
 
-stock void JsonObjectGetString(Handle hElement, char[] key, char[] buffer, maxlength) {
+stock bool JsonObjectGetString(Handle hElement, char[] key, char[] buffer, maxlength) {
 	Handle hObject = json_object_get(hElement, key);
-	if(hObject == INVALID_HANDLE) return;
+	if(hObject == INVALID_HANDLE) return false;
 	
 	if(json_is_integer(hObject)) {
 		IntToString(json_integer_value(hObject), buffer, maxlength);
@@ -252,8 +255,13 @@ stock void JsonObjectGetString(Handle hElement, char[] key, char[] buffer, maxle
 		json_string_value(hObject, buffer, maxlength);
 	}else if(json_is_real(hObject)) {
 		FloatToString(json_real_value(hObject), buffer, maxlength);
+	}else if(json_is_true(hObject)) {
+		FormatEx(buffer, maxlength, "true");
+	}else if(json_is_false(hObject)) {
+		FormatEx(buffer, maxlength, "false");
 	}
 	CloseHandle(hObject);
+	return true;
 }
 
 stock bool JsonObjectGetBool(Handle hElement, char[] key, bool defaultvalue=false) {
@@ -376,4 +384,14 @@ public Action SendRequestAgain(Handle timer, any dp) {
 	ReadPackString(dp, route, sizeof(route));
 	delete view_as<Handle>(dp);
 	DiscordSendRequest(request, route);
+}
+
+stock bool RenameJsonObject(Handle hJson, char[] key, char[] toKey) {
+	Handle hObject = json_object_get(hJson, key);
+	if(hObject != null) {
+		json_object_set_new(hJson, toKey, hObject);
+		json_object_del(hJson, key);
+		return true;
+	}
+	return false;
 }
