@@ -36,7 +36,7 @@ methodmap MessageEmbed < Handle {
 	public void AddField(char[] name, char[] value, bool inline) {
 		Handle hObj = json_object();
 		json_object_set_new(hObj, "name", json_string(name));
-		json_object_set_new(hObj, "value", json_string(name));
+		json_object_set_new(hObj, "value", json_string(value));
 		json_object_set_new(hObj, "inline", json_boolean(inline));
 		Handle hArray = this.Fields;
 		if(this.Fields == null) {
