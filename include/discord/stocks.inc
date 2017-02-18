@@ -63,11 +63,11 @@ stock bool JsonObjectGetBool(Handle hElement, char[] key, bool defaultvalue=fals
 	return ObjectBool;
 }
 
-stock float JsonObjectGetFloat(Handle hJson, char[] key) {
+stock float JsonObjectGetFloat(Handle hJson, char[] key, float defaultValue=0.0) {
 	Handle hObject = json_object_get(hJson, key);
-	if(hObject == INVALID_HANDLE) return 0.0;
+	if(hObject == INVALID_HANDLE) return defaultValue;
 	
-	float value = 0.0;
+	float value = defaultValue;
 	if(json_is_integer(hObject)) {
 		value = float(json_integer_value(hObject));
 	}else if(json_is_real(hObject)) {

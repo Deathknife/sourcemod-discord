@@ -12,7 +12,7 @@ methodmap DiscordBot < StringMap {
 	
 	property float MessageCheckInterval {
 		public get() {
-			return JsonObjectGetFloat(this, "messageInterval");
+			return JsonObjectGetFloat(this, "messageInterval", 3.0);
 		}
 		public set(float value) {
 			json_object_set_new(this, "messageInterval", json_real(value));
