@@ -104,9 +104,11 @@ public int OnGetMessage_Data(const char[] data, any dpt) {
 				//Channel is no longer listed to, remove any handles & stop
 				delete hObject;
 				delete hJson;
+				
 				delete fwd;
 				delete Bot;
 				delete channel;
+				delete hObj;
 				return;
 			}
 			
