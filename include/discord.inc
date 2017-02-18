@@ -16,11 +16,7 @@ typedef DiscordGuildChannelsRetrieve = function void (DiscordBot bot, char[] gui
 typedef DiscordGuildChannelsRetrieveAll = function void (DiscordBot bot, char[] guild, ArrayList Channels, any data);
 
 typeset OnChannelMessage { 
-	function void(DiscordBot bot, DiscordChannel channel, const char[] message);
-	function void(DiscordBot bot, DiscordChannel channel, const char[] message, const char[] messageID);
-	function void(DiscordBot bot, DiscordChannel channel, const char[] message, const char[] messageID, const char[] userID);
-	function void(DiscordBot bot, DiscordChannel channel, const char[] message, const char[] messageID, const char[] userID, const char[] userName, const char[] discriminator);
-	function void(DiscordBot bot, DiscordChannel channel, const char[] message, const char[] messageID, const char[] userID, const char[] userName, const char[] discriminator, Handle hJson);
+	function void(DiscordBot bot, DiscordChannel channel, DiscordMessage message);
 };
 
 typedef OnGetReactions = function void (DiscordBot bot, ArrayList Users, char[] channelID, const char[] messageID, const char[] emoji, any data);

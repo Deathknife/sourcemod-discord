@@ -110,9 +110,6 @@ public int OnGetMessage_Data(const char[] data, any dpt) {
 				return;
 			}
 			
-			static char message[2048];
-			JsonObjectGetString(hObject, "content", message, sizeof(message));
-			
 			char id[32];
 			JsonObjectGetString(hObject, "id", id, sizeof(id));
 			
@@ -120,32 +117,11 @@ public int OnGetMessage_Data(const char[] data, any dpt) {
 				channel.SetLastMessageID(id);
 			}
 			
-			Handle hAuthor = json_object_get(hObject, "author");
-			
-			char userID[32];
-			JsonObjectGetString(hAuthor, "id", userID, sizeof(userID));
-			
-			char name[32];
-			char discriminator[5];
-			
-			JsonObjectGetString(hAuthor, "username", name, sizeof(name));
-			JsonObjectGetString(hAuthor, "discriminator", discriminator, sizeof(discriminator));
-			
-			delete hAuthor;
-			
 			//Get info and fire forward
 			if(fwd != null) {
 				Call_StartForward(fwd);
 				Call_PushCell(Bot);
 				Call_PushCell(channel);
-				
-				Call_PushString(message);
-				Call_PushString(id);
-				
-				Call_PushString(userID);
-				Call_PushString(name);
-				Call_PushString(discriminator);
-				
 				Call_PushCell(hObject);
 				Call_Finish();
 			}
