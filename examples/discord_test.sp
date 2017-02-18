@@ -5,7 +5,7 @@
 #include <sourcemod>
 #include <discord>
 
-#define BOT_TOKEN "INSERT TOKEN HERE"
+#define BOT_TOKEN ""
 
 public Plugin myinfo = 
 {
@@ -24,31 +24,30 @@ public void OnPluginStart() {
 	RegConsoleCmd("sm_webhooktest", Cmd_Webhook);
 }
 
-public void OnPluginEnd() {
-	if(gBot != null) {
-		gBot.DestroyData();
-		delete gBot;
-	}
-}
-
 public void OnAllPluginsLoaded() {
 	gBot = new DiscordBot(BOT_TOKEN);
 }
 
 public Action Cmd_Webhook(int client, int argc) {
-	DiscordWebHook hook = new DiscordWebHook("https://ptb.discordapp.com/api/webhooks/265660968086929419/z3_F8CEGNu1Wtdygv4v0Pg4YRBA8QxgmzFKqjkEleSf2BOuQ8Xz7Ub05ku2j-O2vofy7");
+	DiscordWebHook hook = new DiscordWebHook("");
 	hook.SlackMode = true;
 	
-	hook.SetUsername("Server");
-	hook.SetColor("#ff2222");
-	hook.SetTitle("Testing WebHook");
 	hook.SetContent("@here");
-	hook.AddField("Field1", "Test1", true);
-	hook.AddField("abc def", "deef", true);
+	hook.SetUsername("Server");
+	
+	MessageEmbed Embed = new MessageEmbed();
+	
+	Embed.SetColor("#ff2222");
+	Embed.SetTitle("Testing WebHook");
+	Embed.AddField("Field1", "Test1", true);
+	Embed.AddField("abc def", "deef", true);
+	
+	hook.Embed(Embed);
+	
 	hook.Send();
 	delete hook;
 	
-	hook = new DiscordWebHook("https://ptb.discordapp.com/api/webhooks/265660968086929419/z3_F8CEGNu1Wtdygv4v0Pg4YRBA8QxgmzFKqjkEleSf2BOuQ8Xz7Ub05ku2j-O2vofy7");
+	hook = new DiscordWebHook("");
 	hook.SetUsername("Testing");
 	hook.SlackMode = false;
 	hook.SetContent("Testing 1 2 3");
@@ -65,7 +64,7 @@ public Action Cmd_GetGuilds(int client, int argc) {
 
 public Action Cmd_RecreateBot(int client, int argc) {
 	if(gBot != null) {
-		gBot.DestroyData();
+		gBot.StopListening();
 		delete gBot;
 	}
 	gBot = new DiscordBot(BOT_TOKEN);
@@ -91,9 +90,9 @@ public void ChannelList(DiscordBot bot, char[] guild, DiscordChannel Channel, an
 		
 		if(Channel.IsText) {
 			//Send a message with all ways
-			gBot.SendMessage(Channel, "Sending message with DiscordBot.SendMessage");
-			gBot.SendMessageToChannelID(id, "Sending message with DiscordBot.SendMessageToChannelID");
-			Channel.SendMessage(gBot, "Sending message with DiscordChannel.SendMessage");
+			//gBot.SendMessage(Channel, "Sending message with DiscordBot.SendMessage");
+			//gBot.SendMessageToChannelID(id, "Sending message with DiscordBot.SendMessageToChannelID");
+			//Channel.SendMessage(gBot, "Sending message with DiscordChannel.SendMessage");
 			
 			gBot.StartListeningToChannel(Channel, OnMessage);
 		}
