@@ -1,113 +1,86 @@
 public int Native_DiscordWebHook_Send(Handle plugin, int numParams) {
 	DiscordWebHook hook = GetNativeCell(1);
-	SendWebHook(view_as<DiscordWebHook>(CloneHandle(hook)));
-}
-
-public int Native_DiscordWebHook_AddField(Handle plugin, int numParams) {
-	DiscordWebHook hook = GetNativeCell(1);
-	if(hook.FieldHandle == null) {
-		hook.FieldHandle = json_array();
-	}
-	
-	char title[128];
-	char value[128];
-	bool short;
-	
-	GetNativeString(2, title, sizeof(title));
-	GetNativeString(3, value, sizeof(value));
-	short = GetNativeCell(4);
-	
-	Handle hJson = json_object();
-	json_object_set_new(hJson, "title", json_string(title));
-	json_object_set_new(hJson, "value", json_string(value));
-	json_object_set_new(hJson, "short", (short ? json_true() : json_false() ) );
-	json_array_append_new(hook.FieldHandle, hJson);
-}
-
-public int Native_DiscordWebHook_DeleteFields(Handle plugin, int numParams) {
-	DiscordWebHook hook = GetNativeCell(1);
-	if(hook.FieldHandle != null) {
-		delete hook.FieldHandle;
-	}
+	SendWebHook(view_as<DiscordWebHook>(hook));
 }
 
 public void SendWebHook(DiscordWebHook hook) {
-	Handle hJson = json_object();
+	if(!JsonObjectGetBool(hook, "__selfCopy", false)) {
+		hook = view_as<DiscordWebHook>(json_deep_copy(hook));
+		json_object_set_new(hook, "__selfCopy", json_true());
+	}
+	Handle hJson = hook.Data;
 	
 	char url[256];
 	hook.GetUrl(url, sizeof(url));
-	
-	Handle hAttachments = null;
 	
 	if(hook.SlackMode) {
 		if(StrContains(url, "/slack") == -1) {
 			Format(url, sizeof(url), "%s/slack", url);
 		}
 		
-		hAttachments = json_object();
-	}
-	
-	char username[128];
-	if(hook.GetUsername(username, sizeof(username))) {
-		json_object_set_new(hJson, "username", json_string(username));
-	}
-	
-	if(hook.tts) {
-		json_object_set_new(hJson, "tts", json_true());
-	}
-	
-	if(hAttachments != null) {
-		if(hook.FieldHandle != null) {
-			json_object_set_new(hAttachments, "fields", hook.FieldHandle);
-			hook.FieldHandle = null;
-		}
+		RenameJsonObject(hJson, "content", "text");
+		RenameJsonObject(hJson, "embeds", "attachments");
 		
-		char color[16];
-		if(hook.GetColor(color, sizeof(color))) {
-			json_object_set_new(hAttachments, "color", json_string(color));
-		}
-		
-		char title[128];
-		if(hook.GetTitle(title, sizeof(title))) {
-			json_object_set_new(hAttachments, "title", json_string(title));
-		}
-		
-		Handle hArray = json_array();
-		json_array_append_new(hArray, hAttachments);
-		json_object_set_new(hJson, "attachments", hArray);
-	}
-	
-	static char content[2048];
-	if(hook.GetContent(content, sizeof(content))) {
-		if(hook.SlackMode) {
-			json_object_set_new(hJson, "content", json_string(content));
-		}else {
-			json_object_set_new(hJson, "text", json_string(content));
+		Handle hAttachments = json_object_get(hJson, "attachments");
+		if(hAttachments != null) {
+			if(json_is_array(hAttachments)) {
+				for(int i = 0; i < json_array_size(hAttachments); i++) {
+					Handle hEmbed = json_array_get(hAttachments, i);
+					
+					Handle hFields = json_object_get(hEmbed, "fields");
+					if(hFields) {
+						if(json_is_array(hFields)) {
+							for(int j = 0; j < json_array_size(hFields); j++) {
+								Handle hField = json_array_get(hFields, j);
+								RenameJsonObject(hField, "name", "title");
+								RenameJsonObject(hField, "inline", "short");
+								//json_array_set_new(hFields, j, hField);
+								delete hField;
+							}
+						}
+						
+						//json_object_set_new(hEmbed, "fields", hFields);
+						delete hFields;
+					}
+					
+					//json_array_set_new(hAttachments, i, hEmbed);
+					delete hEmbed;
+				}
+			}
+			
+			//json_object_set_new(hJson, "attachments", hAttachments);
+			delete hAttachments;
 		}
 	}
 	
 	//Send
-	Handle request = PrepareRequestRaw(null, url, k_EHTTPMethodPOST, hJson, SendWebHookReceiveData);
+	DiscordRequest request = new DiscordRequest(url, k_EHTTPMethodPOST);
+	request.SetCallbacks(HTTPCompleted, SendWebHookReceiveData);
+	request.SetJsonBodyEx(hJson);
+	//Handle request = PrepareRequestRaw(null, url, k_EHTTPMethodPOST, hJson, SendWebHookReceiveData);
 	if(request == null) {
-		CreateTimer(2.0, SendWebHookDelayed, hook);
+		CreateTimer(2.0, SendWebHookDelayed, hJson);
 		return;
 	}
 	
-	SteamWorks_SetHTTPRequestContextValue(request, hook, UrlToDP(url));
+	request.SetContextValue(hJson, UrlToDP(url));
 	
-	DiscordSendRequest(request, url);
+	//DiscordSendRequest(request, url);
+	request.Send(url);
 }
 
 public Action SendWebHookDelayed(Handle timer, any data) {
-	DiscordWebHook hook = view_as<DiscordWebHook>(data);
-	
-	SendWebHook(hook);
+	SendWebHook(view_as<DiscordWebHook>(data));
 }
 
 public SendWebHookReceiveData(Handle request, bool failure, int offset, int statuscode, any dp) {
-	if(failure || statuscode != 200) {
+	if(failure || (statuscode != 200 && statuscode != 204)) {
+		if(statuscode == 400) {
+			PrintToServer("BAD REQUEST");
+			SteamWorks_GetHTTPResponseBodyCallback(request, WebHookData, dp);
+		}
+		
 		if(statuscode == 429 || statuscode == 500) {
-			
 			SendWebHook(view_as<DiscordWebHook>(dp));
 			
 			delete request;
@@ -120,4 +93,12 @@ public SendWebHookReceiveData(Handle request, bool failure, int offset, int stat
 	}
 	delete request;
 	delete view_as<Handle>(dp);
+}
+
+public int WebHookData(const char[] data, any dp) {
+	PrintToServer("DATA RECE: %s", data);
+	static char stringJson[16384];
+	stringJson[0] = '\0';
+	json_dump(view_as<Handle>(dp), stringJson, sizeof(stringJson), 0, true);
+	PrintToServer("DATA SENT: %s", stringJson);
 }

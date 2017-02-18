@@ -1,13 +1,13 @@
 #pragma semicolon 1
 
-#define PLUGIN_VERSION "0.1.74"
+#define PLUGIN_VERSION "0.1.87"
 
 #include <sourcemod>
 #include <discord>
 #include <SteamWorks>
 #include <smjansson>
 
-//#include "discord/DiscordRequest.sp"
+#include "discord/DiscordRequest.sp"
 #include "discord/SendMessage.sp"
 #include "discord/GetGuilds.sp"
 #include "discord/GetGuildChannels.sp"
@@ -46,11 +46,11 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 	CreateNative("DiscordBot.GetReactionID", Native_DiscordBot_GetReaction);
 	
 	CreateNative("DiscordChannel.SendMessage", Native_DiscordChannel_SendMessage);
-	CreateNative("DiscordChannel.Destroy", Native_DiscordChannel_Destroy);
+	//CreateNative("DiscordChannel.Destroy", Native_DiscordChannel_Destroy);
 	
 	CreateNative("DiscordWebHook.Send", Native_DiscordWebHook_Send);
-	CreateNative("DiscordWebHook.AddField", Native_DiscordWebHook_AddField);
-	CreateNative("DiscordWebHook.DeleteFields", Native_DiscordWebHook_DeleteFields);
+	//CreateNative("DiscordWebHook.AddField", Native_DiscordWebHook_AddField);
+	//CreateNative("DiscordWebHook.DeleteFields", Native_DiscordWebHook_DeleteFields);
 	
 	CreateNative("DiscordUser.GetID", Native_DiscordUser_GetID);
 	CreateNative("DiscordUser.GetUsername", Native_DiscordUser_GetUsername);
@@ -80,26 +80,14 @@ public void OnPluginStart() {
 public int Native_DiscordBot_Token_Get(Handle plugin, int numParams) {
 	DiscordBot bot = GetNativeCell(1);
 	static char token[196];
-	GetTrieString(bot, "token", token, sizeof(token));
+	JsonObjectGetString(bot, "token", token, sizeof(token));
 	SetNativeString(2, token, GetNativeCell(3));
-}
-
-public int Native_DiscordChannel_Destroy(Handle plugin, int numParams) {
-	DiscordChannel Channel = GetNativeCell(1);
-	
-	if(Channel.MessageRequest != null) {
-		delete Channel.MessageRequest;
-	}
-	
-	if(Channel.MessageTimer != null) {
-		KillTimer(Channel.MessageTimer, true);
-	}
 }
 
 stock void BuildAuthHeader(Handle request, DiscordBot Bot) {
 	static char buffer[256];
 	static char token[196];
-	GetTrieString(Bot, "token", token, sizeof(token));
+	JsonObjectGetString(Bot, "token", token, sizeof(token));
 	FormatEx(buffer, sizeof(buffer), "Bot %s", token);
 	SteamWorks_SetHTTPRequestHeaderValue(request, "Authorization", buffer);
 }
@@ -227,99 +215,6 @@ public int HeadersReceived(Handle request, bool failure, any data, any datapack)
 		SetTrieValue(hRateLeft, route, -1);
 		SetTrieValue(hRateLimit, route, -1);
 	}
-}
-
-int JsonObjectGetInt(Handle hElement, char[] key) {
-	Handle hObject = json_object_get(hElement, key);
-	if(hObject == INVALID_HANDLE) return 0;
-	
-	int value;
-	if(json_is_integer(hObject)) {
-		value = json_integer_value(hObject);
-	}else if(json_is_string(hObject)) {
-		char buffer[12];
-		json_string_value(hObject, buffer, sizeof(buffer));
-		value = StringToInt(buffer);
-	}
-	CloseHandle(hObject);
-	return value;
-}
-
-stock bool JsonObjectGetString(Handle hElement, char[] key, char[] buffer, maxlength) {
-	Handle hObject = json_object_get(hElement, key);
-	if(hObject == INVALID_HANDLE) return false;
-	
-	if(json_is_integer(hObject)) {
-		IntToString(json_integer_value(hObject), buffer, maxlength);
-	}else if(json_is_string(hObject)) {
-		json_string_value(hObject, buffer, maxlength);
-	}else if(json_is_real(hObject)) {
-		FloatToString(json_real_value(hObject), buffer, maxlength);
-	}else if(json_is_true(hObject)) {
-		FormatEx(buffer, maxlength, "true");
-	}else if(json_is_false(hObject)) {
-		FormatEx(buffer, maxlength, "false");
-	}
-	CloseHandle(hObject);
-	return true;
-}
-
-stock bool JsonObjectGetBool(Handle hElement, char[] key, bool defaultvalue=false) {
-	Handle hObject = json_object_get(hElement, key);
-	if(hObject == INVALID_HANDLE) return defaultvalue;
-	
-	bool ObjectBool = defaultvalue;
-	
-	if(json_is_integer(hObject)) {
-		ObjectBool = view_as<bool>(json_integer_value(hObject));
-	}else if(json_is_string(hObject)) {
-		char buffer[11];
-		json_string_value(hObject, buffer, sizeof(buffer));
-		if(StrEqual(buffer, "true", false)) {
-			ObjectBool = true;
-		}else if(StrEqual(buffer, "false", false)) {
-			ObjectBool = false;
-		}else {
-			int x = StringToInt(buffer);
-			ObjectBool = view_as<bool>(x);
-		}
-	}else if(json_is_real(hObject)) {
-		ObjectBool = view_as<bool>(RoundToFloor(json_real_value(hObject)));
-	}else if(json_is_true(hObject)) {
-		ObjectBool = true;
-	}else if(json_is_false(hObject)) {
-		ObjectBool = false;
-	}
-	CloseHandle(hObject);
-	return ObjectBool;
-}
-
-stock DiscordChannel CreateChannelFromJson(Handle hJson) {
-	DiscordChannel Channel = new DiscordChannel();
-	
-	Handle hIterator = json_object_iter(hJson);
-	while(hIterator != INVALID_HANDLE) {
-		char key[64];
-		json_object_iter_key(hIterator, key, sizeof(key));
-		
-		Handle hElement = json_object_iter_value(hIterator);
-		
-		if(json_is_string(hElement)) {
-			char buffer[128];
-			json_string_value(hElement, buffer, sizeof(buffer));
-			SetTrieString(Channel, key, buffer);
-		}else if(json_is_integer(hElement)) {
-			SetTrieValue(Channel, key, json_integer_value(hElement));
-		}else if(json_is_true(hElement)) {
-			SetTrieValue(Channel, key, 1);
-		}else if(json_is_false(hElement)) {
-			SetTrieValue(Channel, key, 0);
-		}
-		
-		delete hElement;
-		hIterator = json_object_iter_next(hJson, hIterator);
-	}
-	return Channel;
 }
 
 /*

@@ -1,11 +1,25 @@
 public int Native_DiscordBot_StartTimer(Handle plugin, int numParams) {
 	DiscordBot bot = GetNativeCell(1);
 	DiscordChannel channel = GetNativeCell(2);
+	Function func = GetNativeCell(3);
 	
-	GetMessages(bot, channel);
+	Handle hObj = json_object();
+	json_object_set(hObj, "bot", bot);
+	json_object_set(hObj, "channel", channel);
+	
+	Handle fwd = CreateForward(ET_Ignore, Param_Cell, Param_Cell, Param_String, Param_String, Param_String, Param_String, Param_String, Param_Cell);
+	AddToForward(fwd, plugin, func);
+	
+	json_object_set_new(hObj, "callback", json_integer(view_as<int>(fwd)));
+	
+	GetMessages(hObj);
 }
 
-public void GetMessages(DiscordBot bot, DiscordChannel channel) {
+public void GetMessages(Handle hObject) {
+	DiscordBot bot = view_as<DiscordBot>(json_object_get(hObject, "bot"));
+	DiscordChannel channel = view_as<DiscordChannel>(json_object_get(hObject, "channel"));
+	//Handle fwd = view_as<Handle>(json_object_get(hObject, "callback"));
+	
 	char channelID[32];
 	channel.GetID(channelID, sizeof(channelID));
 	
@@ -17,64 +31,39 @@ public void GetMessages(DiscordBot bot, DiscordChannel channel) {
 	
 	Handle request = PrepareRequest(bot, url, _, null, OnGetMessage);
 	if(request == null) {
-		DataPack rdp = new DataPack();
-		WritePackCell(rdp, bot);
-		WritePackCell(rdp, channel);
-		CreateTimer(2.0, GetMessagesDelayed, rdp);
+		delete bot;
+		delete channel;
+		CreateTimer(2.0, GetMessagesDelayed, hObject);
 		return;
 	}
-	
-	DataPack dp = new DataPack();
-	WritePackCell(dp, bot);
-	WritePackCell(dp, channel);
-	WritePackString(dp, channelID);
 	
 	char route[128];
 	FormatEx(route, sizeof(route), "channels/%s", channelID);
 	
-	SteamWorks_SetHTTPRequestContextValue(request, dp, UrlToDP(route));
+	SteamWorks_SetHTTPRequestContextValue(request, hObject, UrlToDP(route));
 	
-	channel.MessageRequest = request;
 	DiscordSendRequest(request, route);
 }
 
 public Action GetMessagesDelayed(Handle timer, any data) {
-	DataPack dp = view_as<DataPack>(data);
-	ResetPack(dp);
-	DiscordBot bot = ReadPackCell(dp);
-	DiscordChannel channel = ReadPackCell(dp);
-	delete dp;
-	GetMessages(bot, channel);
+	GetMessages(view_as<Handle>(data));
 }
 
 public Action CheckMessageTimer(Handle timer, any dpt) {
-	DataPack dp = view_as<DataPack>(dpt);
-	ResetPack(dp);
-	DiscordBot Bot = ReadPackCell(dp);
-	DiscordChannel Channel = ReadPackCell(dp);
-	delete dp;
-	
-	Channel.MessageTimer = null;
-	
-	GetMessages(Bot, Channel);
+	GetMessages(view_as<Handle>(dpt));
 }
 
 public int OnGetMessage(Handle request, bool failure, int offset, int statuscode, any dp) {
 	if(failure || statuscode != 200) {
 		if(statuscode == 429 || statuscode == 500) {
-			ResetPack(dp);
-			DiscordBot Bot = ReadPackCell(dp);
-			DiscordChannel Channel = ReadPackCell(dp);
-			
-			Channel.MessageRequest = null;
-			GetMessages(Bot, Channel);
-			
-			delete view_as<Handle>(dp);
+			GetMessages(view_as<Handle>(dp));
 			delete request;
 			return;
 		}
 		LogError("[DISCORD] Couldn't Retrieve Messages - Fail %i %i", failure, statuscode);
 		delete request;
+		Handle fwd = view_as<Handle>(JsonObjectGetInt(view_as<Handle>(dp), "callback"));
+		if(fwd != null) delete fwd;
 		delete view_as<Handle>(dp);
 		return;
 	}
@@ -84,20 +73,19 @@ public int OnGetMessage(Handle request, bool failure, int offset, int statuscode
 }
 
 public int OnGetMessage_Data(const char[] data, any dpt) {
-	DataPack dp = view_as<DataPack>(dpt);
-	ResetPack(dp);
-	DiscordBot Bot = ReadPackCell(dp);
-	DiscordChannel Channel = ReadPackCell(dp);
-	char chID[32];
-	ReadPackString(dp, chID, sizeof(chID));
-	//delete dp;
+	Handle hObj = view_as<Handle>(dpt);
 	
-	if(!Bot.IsListeningToChannelID(chID)) {
-		delete dp;
+	DiscordBot Bot = view_as<DiscordBot>(json_object_get(hObj, "bot"));
+	DiscordChannel channel = view_as<DiscordChannel>(json_object_get(hObj, "channel"));
+	Handle fwd = view_as<Handle>(JsonObjectGetInt(hObj, "callback"));
+	
+	if(!Bot.IsListeningToChannel(channel) || GetForwardFunctionCount(fwd) == 0) {
+		delete Bot;
+		delete channel;
+		delete hObj;
+		delete fwd;
 		return;
 	}
-	
-	Channel.MessageRequest = null;
 	
 	Handle hJson = json_load(data);
 	
@@ -116,7 +104,9 @@ public int OnGetMessage_Data(const char[] data, any dpt) {
 				//Channel is no longer listed to, remove any handles & stop
 				delete hObject;
 				delete hJson;
-				delete dp;
+				delete fwd;
+				delete Bot;
+				delete channel;
 				return;
 			}
 			
@@ -127,7 +117,7 @@ public int OnGetMessage_Data(const char[] data, any dpt) {
 			JsonObjectGetString(hObject, "id", id, sizeof(id));
 			
 			if(i == 0) {
-				Channel.SetLastMessageID(id);
+				channel.SetLastMessageID(id);
 			}
 			
 			Handle hAuthor = json_object_get(hObject, "author");
@@ -144,10 +134,10 @@ public int OnGetMessage_Data(const char[] data, any dpt) {
 			delete hAuthor;
 			
 			//Get info and fire forward
-			if(Channel.MessageCallback != null) {
-				Call_StartForward(Channel.MessageCallback);
+			if(fwd != null) {
+				Call_StartForward(fwd);
 				Call_PushCell(Bot);
-				Call_PushCell(Channel);
+				Call_PushCell(channel);
 				
 				Call_PushString(message);
 				Call_PushString(id);
@@ -164,7 +154,11 @@ public int OnGetMessage_Data(const char[] data, any dpt) {
 		}
 	}
 	
-	Channel.MessageTimer = CreateTimer(Bot.MessageCheckInterval, CheckMessageTimer, dp);
+	CreateTimer(Bot.MessageCheckInterval, CheckMessageTimer, hObj);
+	
+	delete Bot;
+	delete channel;
+	
 	
 	delete hJson;
 }
