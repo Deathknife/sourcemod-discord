@@ -59,7 +59,7 @@ methodmap DiscordWebHook < Handle {
 	}
 	
 	/**
-	 * Note: Does not delete the MessageEmbed Object!
+	 * Note: Deletes the MessageEmbed Object!
 	 */
 	public void Embed(MessageEmbed Object) {
 		//this.UpdateDataObject("embeds", Object);

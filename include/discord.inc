@@ -15,6 +15,11 @@ typedef DiscordGuildChannelsRetrieve = function void (DiscordBot bot, char[] gui
 
 typedef DiscordGuildChannelsRetrieveAll = function void (DiscordBot bot, char[] guild, ArrayList Channels, any data);
 
+/** 
+ * Called when message is received
+ * bot/channel/message are all destroyed after callback is sent.
+ * You can clone it if need to keep.
+ */
 typeset OnChannelMessage { 
 	function void(DiscordBot bot, DiscordChannel channel, DiscordMessage message);
 };
