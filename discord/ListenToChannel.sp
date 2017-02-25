@@ -42,6 +42,9 @@ public void GetMessages(Handle hObject) {
 	
 	SteamWorks_SetHTTPRequestContextValue(request, hObject, UrlToDP(route));
 	
+	delete bot;
+	delete channel;
+	
 	DiscordSendRequest(request, route);
 }
 
