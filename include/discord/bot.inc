@@ -210,4 +210,16 @@ methodmap DiscordBot < StringMap {
 	public native void GetGuilds(DiscordGuildsRetrieve fCallback = INVALID_FUNCTION, DiscordGuildsRetrievedAll fCallbackAll = INVALID_FUNCTION, any data=0);
 	
 	public native void GetGuildChannels(char[] guild, DiscordGuildChannelsRetrieve fCallback = INVALID_FUNCTION, DiscordGuildChannelsRetrieveAll fCallbackAll = INVALID_FUNCTION, any data=0);
+	
+	/**
+	 * ATM takes guild id, hopefully later on i will implement guild objects.
+	 * Limit is from 1-1000
+	 */
+	public native void GetGuildMembers(char[] guild, OnGetMembers fCallback, int limit=250, char[] afterUserID="");
+	
+	/**
+	 * Same as above but displays ALL members, paginating automatically.
+	 * perPage is how many it should display per callback. 1-1000
+	 */
+	public native void GetGuildMembersAll(char[] guild, OnGetMembers fCallback, int perPage=250, char[] afterUserID="");
 }

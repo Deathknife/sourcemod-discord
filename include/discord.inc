@@ -28,10 +28,8 @@ typedef OnGetReactions = function void (DiscordBot bot, ArrayList Users, char[] 
 
 typedef OnMessageSent = function void(DiscordBot bot, char[] channel, DiscordMessage message, any data);
 
-#include <discord/channel>
-#include <discord/message_embed>
-#include <discord/webhook>
-#include <discord/bot>
+//hMemberList is JSON array containing guild members
+typedef OnGetMembers = function void(DiscordBot bot, char[] guild, Handle hMemberList);
 
 /*
 {
@@ -43,7 +41,7 @@ typedef OnMessageSent = function void(DiscordBot bot, char[] channel, DiscordMes
     "email": "nelly@discordapp.com"
 }
  */
-//It's a JSON Handle with the above info
+//It's a JSON Handle with the above info TODO stop using natives!
 methodmap DiscordUser < Handle {
 	public native void GetID(char[] buffer, int maxlength);
 	
@@ -80,3 +78,9 @@ methodmap DiscordMessage < Handle {
 	
 	public native void GetChannelID(char[] buffer, int maxlength);
 }
+
+#include <discord/channel>
+#include <discord/message_embed>
+#include <discord/webhook>
+#include <discord/bot>
+#include <discord/GuildMember>

@@ -54,7 +54,7 @@ methodmap DiscordRequest < Handle {
 			json_dump(hJson, stringJson, sizeof(stringJson), 0, true);
 		}
 		SteamWorks_SetHTTPRequestRawPostBody(this, "application/json; charset=UTF-8", stringJson, strlen(stringJson));
-		delete hJson;
+		if(hJson != null) delete hJson;
 	}
 	
 	public void SetJsonBodyEx(Handle hJson) {
@@ -78,6 +78,10 @@ methodmap DiscordRequest < Handle {
 	
 	public void SetContextValue(any data1, any data2) {
 		SteamWorks_SetHTTPRequestContextValue(this, data1, data2);
+	}
+	
+	public void SetData(any data1, char[] route) {
+		SteamWorks_SetHTTPRequestContextValue(this, data1, UrlToDP(route));
 	}
 	
 	public void SetBot(DiscordBot bot) {
