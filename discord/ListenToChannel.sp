@@ -7,7 +7,7 @@ public int Native_DiscordBot_StartTimer(Handle plugin, int numParams) {
 	json_object_set(hObj, "bot", bot);
 	json_object_set(hObj, "channel", channel);
 	
-	Handle fwd = CreateForward(ET_Ignore, Param_Cell, Param_Cell, Param_String, Param_String, Param_String, Param_String, Param_String, Param_Cell);
+	Handle fwd = CreateForward(ET_Ignore, Param_Cell, Param_Cell, Param_Cell);
 	AddToForward(fwd, plugin, func);
 	
 	json_object_set_new(hObj, "callback", json_integer(view_as<int>(fwd)));
@@ -127,7 +127,7 @@ public int OnGetMessage_Data(const char[] data, any dpt) {
 				Call_StartForward(fwd);
 				Call_PushCell(Bot);
 				Call_PushCell(channel);
-				Call_PushCell(hObject);
+				Call_PushCell(view_as<DiscordMessage>(hObject));
 				Call_Finish();
 			}
 			
