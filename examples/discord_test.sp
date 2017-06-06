@@ -6,6 +6,7 @@
 #include <discord>
 
 #define BOT_TOKEN ""
+#define WEBHOOK ""
 
 public Plugin myinfo = 
 {
@@ -22,6 +23,7 @@ public void OnPluginStart() {
 	RegConsoleCmd("sm_getguilds", Cmd_GetGuilds);
 	RegConsoleCmd("sm_recreatebot", Cmd_RecreateBot);
 	RegConsoleCmd("sm_webhooktest", Cmd_Webhook);
+	RegConsoleCmd("sm_sendmsg", Cmd_SendMsg);
 }
 
 public void OnAllPluginsLoaded() {
@@ -29,7 +31,7 @@ public void OnAllPluginsLoaded() {
 }
 
 public Action Cmd_Webhook(int client, int argc) {
-	DiscordWebHook hook = new DiscordWebHook("");
+	DiscordWebHook hook = new DiscordWebHook(WEBHOOK);
 	hook.SlackMode = true;
 	
 	hook.SetContent("@here");
@@ -57,6 +59,12 @@ public Action Cmd_Webhook(int client, int argc) {
 
 
 public Action Cmd_GetGuilds(int client, int argc) {
+	if(client == 0)
+	{
+		ReplyToCommand(client, "[SM] This command cannot be used from console.");
+		return Plugin_Handled;
+	}
+	
 	gBot.GetGuilds(GuildList, GuildListAll, GetClientUserId(client));
 	ReplyToCommand(client, "Trying!");
 	return Plugin_Handled;
@@ -99,10 +107,16 @@ public void ChannelList(DiscordBot bot, char[] guild, DiscordChannel Channel, an
 	}
 }
 
-public void OnMessage(DiscordBot Bot, DiscordChannel Channel, const char[] message) {
-	PrintToServer("Message from discord: %s", message);
+public void OnMessage(DiscordBot Bot, DiscordChannel Channel, DiscordMessage message) {
+	char sMessage[2048];
+	message.GetContent(sMessage, sizeof(sMessage));
 	
-	if(StrEqual(message, "Ping", false)) {
+	char sAuthor[128];
+	message.GetAuthor().GetUsername(sAuthor, sizeof(sAuthor));
+	
+	PrintToChatAll("[DISCORD] %s: %s", sAuthor, sMessage);
+	
+	if(StrEqual(sMessage, "Ping", false)) {
 		gBot.SendMessage(Channel, "Pong!");
 	}
 }
@@ -130,5 +144,31 @@ public void GuildListAll(DiscordBot bot, ArrayList Alid, ArrayList Alname, Array
 }
 
 public Action Cmd_SendMsg(int client, int argc) {
-	//
+	if(client == 0)
+	{
+		ReplyToCommand(client, "[SM] This command cannot be used from console.");
+		return Plugin_Handled;
+	}
+	
+	if(argc != 2)
+	{
+		ReplyToCommand(client, "[SM] Usage: sm_sendmsg <channelid> <message>.");
+		return Plugin_Handled;
+	}
+	
+	char channelid[64];
+	GetCmdArg(1, channelid, sizeof(channelid));
+	
+	char message[256];
+	GetCmdArg(2, message, sizeof(message));
+	
+	gBot.SendMessageToChannelID(channelid, message, OnMessageSent, GetClientUserId(client));
+	
+	return Plugin_Handled;
+}
+
+public void OnMessageSent(DiscordBot bot, char[] channel, DiscordMessage message, any data)
+{
+	int client = GetClientOfUserId(data);
+	ReplyToCommand(client, "Message sent!");
 }
