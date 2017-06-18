@@ -15,6 +15,8 @@ typedef DiscordGuildChannelsRetrieve = function void (DiscordBot bot, char[] gui
 
 typedef DiscordGuildChannelsRetrieveAll = function void (DiscordBot bot, char[] guild, ArrayList Channels, any data);
 
+typedef DiscordGuildGetRoles = function void (DiscordBot bot, char[] guild, RoleList Roles, any data);
+
 /** 
  * Called when message is received
  * bot/channel/message are all destroyed after callback is sent.
@@ -30,6 +32,57 @@ typedef OnMessageSent = function void(DiscordBot bot, char[] channel, DiscordMes
 
 //hMemberList is JSON array containing guild members
 typedef OnGetMembers = function void(DiscordBot bot, char[] guild, Handle hMemberList);
+
+methodmap Role < Handle {
+	public void GetID(char[] buffer, int maxlength) {
+		JsonObjectGetString(this, "id", buffer, maxlength);
+	}
+	
+	public void GetName(char[] buffer, int maxlength) {
+		JsonObjectGetString(this, "name", buffer, maxlength);
+	}
+	
+	public int GetColor() {
+		return JsonObjectGetInt(this, "color");
+	}
+	
+	public int GetPosition() {
+		return JsonObjectGetInt(this, "position");
+	}
+	
+	public int GetPermissions() {
+		return JsonObjectGetInt(this, "permissions");
+	}
+	
+	public bool Hoist() {
+		return JsonObjectGetBool(this, "hoist");
+	}
+	
+	public bool Managed() {
+		return JsonObjectGetBool(this, "managed");
+	}
+	
+	public bool Mentionable() {
+		return JsonObjectGetBool(this, "mentionable");
+	}
+}
+
+methodmap RoleList < Handle {
+	property int Size {
+		public get() {
+			return json_array_size(this);
+		}
+	}
+	public Role GetRole(int i) {
+		return view_as<Role>(
+			json_array_get(this, i)
+		);
+	}
+	public Role Get(int i) {
+		return this.GetRole(i);
+	}
+	
+}
 
 /*
 {

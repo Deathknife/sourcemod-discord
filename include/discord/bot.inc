@@ -222,4 +222,6 @@ methodmap DiscordBot < StringMap {
 	 * perPage is how many it should display per callback. 1-1000
 	 */
 	public native void GetGuildMembersAll(char[] guild, OnGetMembers fCallback, int perPage=250, char[] afterUserID="");
+	
+	public native void GetGuildRoles(char[] guild, DiscordGuildGetRoles fCallback, any data);
 }

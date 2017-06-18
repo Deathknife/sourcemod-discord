@@ -1,6 +1,6 @@
 #pragma semicolon 1
 
-#define PLUGIN_VERSION "0.1.94"
+#define PLUGIN_VERSION "0.1.97"
 
 #include <sourcemod>
 #include <discord>
@@ -17,6 +17,7 @@
 #include "discord/UserObject.sp"
 #include "discord/MessageObject.sp"
 #include "discord/GuildMembers.sp"
+#include "discord/GuildRole.sp"
 
 //For rate limitation
 Handle hRateLimit = null;
@@ -46,6 +47,8 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 	CreateNative("DiscordBot.GetGuilds", Native_DiscordBot_GetGuilds);
 	//GetGuildChannels.sp
 	CreateNative("DiscordBot.GetGuildChannels", Native_DiscordBot_GetGuildChannels);
+	//GuildRole.sp
+	CreateNative("DiscordBot.GetGuildRoles", Native_DiscordBot_GetGuildRoles);
 	
 	//reactions.sp
 	CreateNative("DiscordBot.AddReactionID", Native_DiscordBot_AddReaction);
