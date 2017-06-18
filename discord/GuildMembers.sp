@@ -70,7 +70,6 @@ static void GetMembers(Handle hData) {
 	}else {
 		FormatEx(url, sizeof(url), "https://discordapp.com/api/guilds/%s/members?limit=%i&afterID=%s", guild, limit, afterID);
 	}
-	PrintToServer("url: %s", url);
 	
 	char route[128];
 	FormatEx(route, sizeof(route), "guild/%s/members", guild);
