@@ -24,6 +24,7 @@ public void OnPluginStart() {
 	RegConsoleCmd("sm_recreatebot", Cmd_RecreateBot);
 	RegConsoleCmd("sm_webhooktest", Cmd_Webhook);
 	RegConsoleCmd("sm_sendmsg", Cmd_SendMsg);
+	RegConsoleCmd("sm_getroles", Cmd_GetRoles);
 }
 
 public void OnAllPluginsLoaded() {
@@ -57,6 +58,40 @@ public Action Cmd_Webhook(int client, int argc) {
 	delete hook;
 }
 
+public Action Cmd_GetRoles(int client, int argc) {
+	if(client == 0)
+	{
+		ReplyToCommand(client, "[SM] This command cannot be used from console.");
+		return Plugin_Handled;
+	}
+	
+	gBot.GetGuilds(GuildListGetRoles, _, GetClientUserId(client));
+	ReplyToCommand(client, "Trying!");
+	return Plugin_Handled;
+}
+
+public void GuildListGetRoles(DiscordBot bot, char[] id, char[] name, char[] icon, bool owner, int permissions, any data) {
+	int client = GetClientOfUserId(data);
+	if(client > 0 && IsClientConnected(client) && IsClientInGame(client)) {
+		bot.GetGuildRoles(id, OnGetRoles, data);
+	}
+}
+
+public void OnGetRoles(DiscordBot bot, char[] guild, RoleList roles, any data) {
+	PrintToChatAll("%i a", data);
+	int client = GetClientOfUserId(data);
+	if(client > 0 && IsClientConnected(client) && IsClientInGame(client)) {
+		PrintToConsole(client, "Roles for guild %s", guild);
+		for(int i = 0; i < roles.Size; i++) {
+			Role role = roles.Get(i);
+			char id[64];
+			char name[64];
+			role.GetID(id, sizeof(id));
+			role.GetName(name, sizeof(name));
+			PrintToConsole(client, "Role %s %s", id, name);
+		}
+	}
+}
 
 public Action Cmd_GetGuilds(int client, int argc) {
 	if(client == 0)
