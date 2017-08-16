@@ -1,6 +1,6 @@
 #pragma semicolon 1
 
-#define PLUGIN_VERSION "0.1.97"
+#define PLUGIN_VERSION "0.1.103"
 
 #include <sourcemod>
 #include <discord>
@@ -18,6 +18,7 @@
 #include "discord/MessageObject.sp"
 #include "discord/GuildMembers.sp"
 #include "discord/GuildRole.sp"
+#include "discord/deletemessage.sp"
 
 //For rate limitation
 Handle hRateLimit = null;
@@ -39,6 +40,10 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 	CreateNative("DiscordBot.SendMessage", Native_DiscordBot_SendMessage);
 	CreateNative("DiscordBot.SendMessageToChannelID", Native_DiscordBot_SendMessageToChannel);
 	CreateNative("DiscordChannel.SendMessage", Native_DiscordChannel_SendMessage);
+	
+	//deletemessage.sp
+	CreateNative("DiscordBot.DeleteMessageID", Native_DiscordBot_DeleteMessageID);
+	CreateNative("DiscordBot.DeleteMessage", Native_DiscordBot_DeleteMessage);
 	
 	//ListenToChannel.sp
 	CreateNative("DiscordBot.StartTimer", Native_DiscordBot_StartTimer);

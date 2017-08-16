@@ -30,6 +30,8 @@ typedef OnGetReactions = function void (DiscordBot bot, ArrayList Users, char[] 
 
 typedef OnMessageSent = function void(DiscordBot bot, char[] channel, DiscordMessage message, any data);
 
+typedef OnMessageDeleted = function void(DiscordBot bot, any data);
+
 //hMemberList is JSON array containing guild members
 typedef OnGetMembers = function void(DiscordBot bot, char[] guild, Handle hMemberList);
 

@@ -207,6 +207,10 @@ methodmap DiscordBot < StringMap {
 	
 	public native void SendMessageToChannelID(char[] channel, char[] message, OnMessageSent fCallback=INVALID_FUNCTION, any data=0);
 	
+	public native void DeleteMessageID(char[] channel, char[] message, OnMessageDeleted fCallback=INVALID_FUNCTION, any data=0);
+	public native void DeleteMessage(DiscordChannel channel, DiscordMessage message, OnMessageDeleted fCallback=INVALID_FUNCTION, any data=0);
+	
+	
 	public native void GetGuilds(DiscordGuildsRetrieve fCallback = INVALID_FUNCTION, DiscordGuildsRetrievedAll fCallbackAll = INVALID_FUNCTION, any data=0);
 	
 	public native void GetGuildChannels(char[] guild, DiscordGuildChannelsRetrieve fCallback = INVALID_FUNCTION, DiscordGuildChannelsRetrieveAll fCallbackAll = INVALID_FUNCTION, any data=0);
