@@ -13,7 +13,9 @@ public int Native_DiscordBot_SendMessageToChannel(Handle plugin, int numParams) 
 		AddToForward(fForward, plugin, fCallback);
 	}
 
-	SendMessage(bot, channel, message, fForward, data);
+	Handle hJson = json_object();
+	json_object_set_new(hJson, "content", json_string(message));
+	SendMessage(bot, channel, hJson, fForward, data);
 }
 
 public int Native_DiscordBot_SendMessageEmbedToChannel(Handle plugin, int numParams) {
@@ -33,7 +35,11 @@ public int Native_DiscordBot_SendMessageEmbedToChannel(Handle plugin, int numPar
 		AddToForward(fForward, plugin, fCallback);
 	}
 
-	SendMessageEmbed(bot, channel, message, embed, fForward, data);
+	Handle hJson = json_object();
+	json_object_set_new(hJson, "content", json_string(message));
+	json_object_set_new(hJson, "embed", view_as<Handle>(embed));
+
+	SendMessage(bot, channel, hJson, fForward, data);
 }
 
 public int Native_DiscordBot_SendMessage(Handle plugin, int numParams) {
@@ -54,7 +60,9 @@ public int Native_DiscordBot_SendMessage(Handle plugin, int numParams) {
 		AddToForward(fForward, plugin, fCallback);
 	}
 
-	SendMessage(bot, channelID, message, fForward, data);
+	Handle hJson = json_object();
+	json_object_set_new(hJson, "content", json_string(message));
+	SendMessage(bot, channelID, hJson, fForward, data);
 }
 
 public int Native_DiscordBot_SendMessageEmbed(Handle plugin, int numParams) {
@@ -77,7 +85,11 @@ public int Native_DiscordBot_SendMessageEmbed(Handle plugin, int numParams) {
 		AddToForward(fForward, plugin, fCallback);
 	}
 
-	SendMessageEmbed(bot, channelID, message, embed, fForward, data);
+	Handle hJson = json_object();
+	json_object_set_new(hJson, "content", json_string(message));
+	json_object_set_new(hJson, "embed", view_as<Handle>(embed));
+
+	SendMessage(bot, channelID, hJson, fForward, data);
 }
 
 public int Native_DiscordChannel_SendMessage(Handle plugin, int numParams) {
@@ -99,7 +111,9 @@ public int Native_DiscordChannel_SendMessage(Handle plugin, int numParams) {
 		AddToForward(fForward, plugin, fCallback);
 	}
 
-	SendMessage(bot, channelID, message, fForward, data);
+	Handle hJson = json_object();
+	json_object_set_new(hJson, "content", json_string(message));
+	SendMessage(bot, channelID, hJson, fForward, data);
 }
 
 public int Native_DiscordChannel_SendMessageEmbed(Handle plugin, int numParams) {
@@ -124,26 +138,14 @@ public int Native_DiscordChannel_SendMessageEmbed(Handle plugin, int numParams) 
 		AddToForward(fForward, plugin, fCallback);
 	}
 
-	SendMessageEmbed(bot, channelID, message, embed, fForward, data);
-}
-
-static void SendMessage(DiscordBot bot, char[] channel, char[] message, Handle fForward, any data) {
 	Handle hJson = json_object();
-
-	json_object_set_new(hJson, "content", json_string(message));
-	SendMessageJSON(bot, channel, hJson, fForward, data);
-}
-
-static void SendMessageEmbed(DiscordBot bot, char[] channel, char[] message, MessageEmbed embed, Handle fForward, any data) {
-	Handle hJson = json_object();
-
 	json_object_set_new(hJson, "content", json_string(message));
 	json_object_set_new(hJson, "embed", view_as<Handle>(embed));
 
-	SendMessageJSON(bot, channel, hJson, fForward, data);
+	SendMessage(bot, channelID, hJson, fForward, data);
 }
 
-static void SendMessageJSON(DiscordBot bot, char[] channel, Handle hJson, Handle fForward, any data) {
+static void SendMessage(DiscordBot bot, char[] channel, Handle hJson, Handle fForward, any data) {
 	char url[64];
 	FormatEx(url, sizeof(url), "channels/%s/messages", channel);
 
@@ -182,7 +184,7 @@ public Action SendMessageDelayed(Handle timer, any data) {
 
 	delete dp;
 
-	SendMessageJSON(bot, channel, hJson, fForward, dataa);
+	SendMessage(bot, channel, hJson, fForward, dataa);
 }
 
 public int GetSendMessageData(Handle request, bool failure, int offset, int statuscode, any dp) {
@@ -201,7 +203,7 @@ public int GetSendMessageData(Handle request, bool failure, int offset, int stat
 
 			delete view_as<Handle>(dp);
 
-			SendMessageJSON(bot, channel, hJson, fForward, data);
+			SendMessage(bot, channel, hJson, fForward, data);
 
 			delete request;
 			return;
