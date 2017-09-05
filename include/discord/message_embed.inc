@@ -1,18 +1,10 @@
 methodmap MessageEmbed < Handle {
-	public MessageEmbed() {
-		Handle hObj = json_object();
-		return view_as<MessageEmbed>(hObj);
-	}
+  public MessageEmbed() {
+    Handle hObj = json_object();
+    return view_as<MessageEmbed>(hObj);
+  }
 
-	public bool GetColor(char[] buffer, int maxlength) {
-		return JsonObjectGetString(this, "color", buffer, maxlength);
-	}
-
-	public void SetColor(char[] color) {
-		json_object_set_new(this, "color", json_string(color));
-	}
-
-	public bool GetTitle(char[] buffer, int maxlength) {
+  public bool GetTitle(char[] buffer, int maxlength) {
 		return JsonObjectGetString(this, "title", buffer, maxlength);
 	}
 
@@ -20,70 +12,68 @@ methodmap MessageEmbed < Handle {
 		json_object_set_new(this, "title", json_string(title));
 	}
 
-	public bool GetTitleLink(char[] buffer, int maxlength) {
-		return JsonObjectGetString(this, "title_link", buffer, maxlength);
+  public bool GetDescription(char[] buffer, int maxlength) {
+		return JsonObjectGetString(this, "description", buffer, maxlength);
 	}
 
-	public void SetImageLink(char[] title_link) {
-		json_object_set_new(this, "title_link", json_string(title_link));
+	public void SetDescription(char[] description) {
+		json_object_set_new(this, "description", json_string(description));
 	}
 
-	public bool GetImage(char[] buffer, int maxlength) {
-		return JsonObjectGetString(this, "image_url", buffer, maxlength);
+  public bool GetUrl(char[] buffer, int maxlength) {
+		return JsonObjectGetString(this, "url", buffer, maxlength);
 	}
 
-	public void SetImage(char[] image_url) {
-		json_object_set_new(this, "image_url", json_string(image_url));
+	public void SetUrl(char[] url) {
+		json_object_set_new(this, "url", json_string(url));
 	}
 
-	public bool GetAuthor(char[] buffer, int maxlength) {
-		return JsonObjectGetString(this, "author_name", buffer, maxlength);
+  property int Color { // Hexadecimal RGB int (i.e 0xffffff for white, 0x00ff00 for green...)
+		public get() {
+			return JsonObjectGetInt(this, "color");
+		}
+
+		public set(int value) {
+			json_object_set_new(this, "color", json_integer(value));
+		}
 	}
 
-	public void SetAuthor(char[] author_name) {
-		json_object_set_new(this, "author_name", json_string(author_name));
+  public void SetFooter(char[] text, char[] icon_url) {
+    Handle hObj = json_object();
+    json_object_set_new(hObj, "text", json_string(text));
+    json_object_set_new(hObj, "icon_url", json_string(icon_url));
+    json_object_set_new(this, "footer", hObj);
+  }
+
+  public bool GetFooterText(char[] buffer, int maxlength) {
+    return JsonObjectGetString(json_object_get(this, "footer"), "text", buffer, maxlength);
+  }
+
+  public bool GetFooterIconUrl(char[] buffer, int maxlength) {
+    return JsonObjectGetString(json_object_get(this, "footer"), "icon_url", buffer, maxlength);
+  }
+
+  public bool GetImageUrl(char[] buffer, int maxlength) {
+		return JsonObjectGetString(json_object_get(this, "image"), "url", buffer, maxlength);
 	}
 
-	public bool GetAuthorLink(char[] buffer, int maxlength) {
-		return JsonObjectGetString(this, "author_link", buffer, maxlength);
+	public void SetImageUrl(char[] url) {
+    Handle hObj = json_object();
+    json_object_set_new(hObj, "url", json_string(url));
+    json_object_set_new(this, "image", hObj);
 	}
 
-	public void SetAuthorLink(char[] author_link) {
-		json_object_set_new(this, "author_link", json_string(author_link));
+  public bool GetThumbnailUrl(char[] buffer, int maxlength) {
+		return JsonObjectGetString(json_object_get(this, "thumbnail"), "url", buffer, maxlength);
 	}
 
-	public bool GetAuthorIcon(char[] buffer, int maxlength) {
-		return JsonObjectGetString(this, "author_icon", buffer, maxlength);
+	public void SetThumbnailUrl(char[] url) {
+    Handle hObj = json_object();
+    json_object_set_new(hObj, "url", json_string(url));
+    json_object_set_new(this, "thumbnail", hObj);
 	}
 
-	public void SetAuthorIcon(char[] author_icon) {
-		json_object_set_new(this, "author_icon", json_string(author_icon));
-	}
-
-	public bool GetThumb(char[] buffer, int maxlength) {
-		return JsonObjectGetString(this, "thumb_url", buffer, maxlength);
-	}
-
-	public void SetThumb(char[] thumb_url) {
-		json_object_set_new(this, "thumb_url", json_string(thumb_url));
-	}
-
-	public bool GetFooter(char[] buffer, int maxlength) {
-		return JsonObjectGetString(this, "footer", buffer, maxlength);
-	}
-
-	public void SetFooter(char[] footer) {
-		json_object_set_new(this, "footer", json_string(footer));
-	}
-
-	public bool GetFooterIcon(char[] buffer, int maxlength) {
-		return JsonObjectGetString(this, "footer_icon", buffer, maxlength);
-	}
-
-	public void SetFooterIcon(char[] footer_icon) {
-		json_object_set_new(this, "footer_icon", json_string(footer_icon));
-	}
-	/**
+  /**
 	 * Note: Setting Fields will delete the handle!
 	 */
 	property Handle Fields {
@@ -107,22 +97,5 @@ methodmap MessageEmbed < Handle {
 		}
 		json_array_append_new(hArray, hObj);
 		this.Fields = hArray;
-	}
-
-	//Below don't support Slack Mode
-	public bool GetDescription(char[] buffer, int maxlength) {
-		return JsonObjectGetString(this, "description", buffer, maxlength);
-	}
-
-	public void SetDescription(char[] description) {
-		json_object_set_new(this, "description", json_string(description));
-	}
-
-	public bool GetURL(char[] buffer, int maxlength) {
-		return JsonObjectGetString(this, "url", buffer, maxlength);
-	}
-
-	public void SetURL(char[] url) {
-		json_object_set_new(this, "url", json_string(url));
 	}
 }
