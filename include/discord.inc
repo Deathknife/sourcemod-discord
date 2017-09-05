@@ -17,12 +17,12 @@ typedef DiscordGuildChannelsRetrieveAll = function void (DiscordBot bot, char[] 
 
 typedef DiscordGuildGetRoles = function void (DiscordBot bot, char[] guild, RoleList Roles, any data);
 
-/** 
+/**
  * Called when message is received
  * bot/channel/message are all destroyed after callback is sent.
  * You can clone it if need to keep.
  */
-typeset OnChannelMessage { 
+typeset OnChannelMessage {
 	function void(DiscordBot bot, DiscordChannel channel, DiscordMessage message);
 };
 
@@ -39,31 +39,31 @@ methodmap Role < Handle {
 	public void GetID(char[] buffer, int maxlength) {
 		JsonObjectGetString(this, "id", buffer, maxlength);
 	}
-	
+
 	public void GetName(char[] buffer, int maxlength) {
 		JsonObjectGetString(this, "name", buffer, maxlength);
 	}
-	
+
 	public int GetColor() {
 		return JsonObjectGetInt(this, "color");
 	}
-	
+
 	public int GetPosition() {
 		return JsonObjectGetInt(this, "position");
 	}
-	
+
 	public int GetPermissions() {
 		return JsonObjectGetInt(this, "permissions");
 	}
-	
+
 	public bool Hoist() {
 		return JsonObjectGetBool(this, "hoist");
 	}
-	
+
 	public bool Managed() {
 		return JsonObjectGetBool(this, "managed");
 	}
-	
+
 	public bool Mentionable() {
 		return JsonObjectGetBool(this, "mentionable");
 	}
@@ -83,7 +83,7 @@ methodmap RoleList < Handle {
 	public Role Get(int i) {
 		return this.GetRole(i);
 	}
-	
+
 }
 
 /*
@@ -99,22 +99,22 @@ methodmap RoleList < Handle {
 //It's a JSON Handle with the above info TODO stop using natives!
 methodmap DiscordUser < Handle {
 	public native void GetID(char[] buffer, int maxlength);
-	
+
 	public native void GetUsername(char[] buffer, int maxlength);
-	
+
 	public native void GetDiscriminator(char[] buffer, int maxlength);
 	public int GetDiscriminatorInt() {
 		char buffer[16];
 		this.GetDiscriminator(buffer, sizeof(buffer));
 		return StringToInt(buffer);
 	}
-	
+
 	public native void GetAvatar(char[] buffer, int maxlength);
-	
+
 	public native bool IsVerified();
-	
+
 	public native void GetEmail(char[] buffer, int maxlength);
-	
+
 	public native bool IsBot();
 }
 
@@ -124,17 +124,18 @@ methodmap DiscordUser < Handle {
  */
 methodmap DiscordMessage < Handle {
 	public native void GetID(char[] buffer, int maxlength);
-	
+
 	public native bool IsPinned();
-	
+
 	public native DiscordUser GetAuthor();
-	
+
 	public native void GetContent(char[] buffer, int maxlength);
-	
+
 	public native void GetChannelID(char[] buffer, int maxlength);
 }
 
 #include <discord/channel>
+#include <discord/slack_embed>
 #include <discord/message_embed>
 #include <discord/webhook>
 #include <discord/bot>

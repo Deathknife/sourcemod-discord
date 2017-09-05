@@ -39,7 +39,7 @@ public Action Cmd_Webhook(int client, int argc) {
 	hook.SetContent("@here");
 	hook.SetUsername("Server");
 
-	MessageEmbed Embed = new MessageEmbed();
+	SlackEmbed Embed = new SlackEmbed();
 
 	Embed.SetColor("#ff2222");
 	Embed.SetTitle("Testing WebHook");
@@ -52,9 +52,22 @@ public Action Cmd_Webhook(int client, int argc) {
 	delete hook;
 
 	hook = new DiscordWebHook(WEBHOOK);
-	hook.SetUsername("Testing");
 	hook.SlackMode = false;
+	hook.SetUsername("Testing");
 	hook.SetContent("Testing 1 2 3");
+
+	MessageEmbed embed = new MessageEmbed();
+	embed.SetTitle("TestEmbed");
+	embed.SetUrl("http://google.com");
+	embed.Color = 0x00ff00;
+	embed.SetFooter("Footer text", "https://camo.githubusercontent.com/8593f18483b8bc603725d988c3fba1d728bc27d4/68747470733a2f2f646973636f72646170702e636f6d2f6173736574732f32633231616564613136646533353462613533333435353161383833623438312e706e67");
+	embed.SetThumbnailUrl("https://camo.githubusercontent.com/8593f18483b8bc603725d988c3fba1d728bc27d4/68747470733a2f2f646973636f72646170702e636f6d2f6173736574732f32633231616564613136646533353462613533333435353161383833623438312e706e67");
+	embed.SetImageUrl("https://www.robotcarnival.net/wp-content/uploads/2017/06/discord.png");
+	embed.AddField("asd", "fgh", true);
+	embed.AddField("asd", "fgh", true);
+	embed.AddField("asd", "fgh", false);
+	embed.AddField("asd", "fgh", false);
+	hook.Embed(embed);
 	hook.Send();
 	delete hook;
 }
@@ -215,11 +228,13 @@ public Action Cmd_SendMsgEmbed(int client, int argc) {
 
 	MessageEmbed Embed = new MessageEmbed();
 
+	Embed.Color = 0x00ff00;
 	Embed.SetTitle("Testing SendMessageEmbed");
 	Embed.AddField("Field1", "Test1", true);
 	Embed.AddField("abc def", "deef", true);
 	Embed.AddField("Field1", "Test1", false);
 	Embed.AddField("abc def", "deef", false);
+	Embed.SetFooter("Footer text.");
 
 	gBot.SendMessageEmbedToChannelID(channelid, "Message", Embed);
 
