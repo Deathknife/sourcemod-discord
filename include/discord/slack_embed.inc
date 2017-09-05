@@ -1,7 +1,7 @@
 methodmap SlackEmbed < Handle {
 	public SlackEmbed() {
 		Handle hObj = json_object();
-		return view_as<MessageEmbed>(hObj);
+		return view_as<SlackEmbed>(hObj);
 	}
 
 	public bool GetColor(char[] buffer, int maxlength) {
