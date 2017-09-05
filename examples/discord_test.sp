@@ -228,11 +228,13 @@ public Action Cmd_SendMsgEmbed(int client, int argc) {
 
 	MessageEmbed Embed = new MessageEmbed();
 
+	Embed.Color = 0x00ff00;
 	Embed.SetTitle("Testing SendMessageEmbed");
 	Embed.AddField("Field1", "Test1", true);
 	Embed.AddField("abc def", "deef", true);
 	Embed.AddField("Field1", "Test1", false);
 	Embed.AddField("abc def", "deef", false);
+	Embed.SetFooter("Footer text.");
 
 	gBot.SendMessageEmbedToChannelID(channelid, "Message", Embed);
 

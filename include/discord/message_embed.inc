@@ -38,10 +38,12 @@ methodmap MessageEmbed < Handle {
 		}
 	}
 
-  public void SetFooter(char[] text, char[] icon_url) {
+  public void SetFooter(char[] text, char[] icon_url = "") {
     Handle hObj = json_object();
     json_object_set_new(hObj, "text", json_string(text));
-    json_object_set_new(hObj, "icon_url", json_string(icon_url));
+    if(!StrEqual(icon_url, "")) {
+      json_object_set_new(hObj, "icon_url", json_string(icon_url));
+    }
     json_object_set_new(this, "footer", hObj);
   }
 
