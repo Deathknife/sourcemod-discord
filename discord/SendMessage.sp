@@ -144,10 +144,6 @@ static void SendMessageEmbed(DiscordBot bot, char[] channel, char[] message, Mes
 }
 
 static void SendMessageJSON(DiscordBot bot, char[] channel, Handle hJson, Handle fForward, any data) {
-	char json[4096];
-	json_dump(hJson, json, sizeof(json));
-	PrintToServer(json);
-
 	char url[64];
 	FormatEx(url, sizeof(url), "channels/%s/messages", channel);
 
