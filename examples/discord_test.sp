@@ -24,6 +24,7 @@ public void OnPluginStart() {
 	RegConsoleCmd("sm_recreatebot", Cmd_RecreateBot);
 	RegConsoleCmd("sm_webhooktest", Cmd_Webhook);
 	RegConsoleCmd("sm_sendmsg", Cmd_SendMsg);
+	RegConsoleCmd("sm_sendmsgembed", Cmd_SendMsgEmbed);
 	RegConsoleCmd("sm_getroles", Cmd_GetRoles);
 }
 
@@ -198,6 +199,29 @@ public Action Cmd_SendMsg(int client, int argc) {
 	GetCmdArg(2, message, sizeof(message));
 
 	gBot.SendMessageToChannelID(channelid, message, OnMessageSent, GetClientUserId(client));
+
+	return Plugin_Handled;
+}
+
+public Action Cmd_SendMsgEmbed(int client, int argc) {
+	if(argc != 1)
+	{
+		ReplyToCommand(client, "[SM] Usage: sm_sendmsgembed <channelid>.");
+		return Plugin_Handled;
+	}
+
+	char channelid[64];
+	GetCmdArg(1, channelid, sizeof(channelid));
+
+	MessageEmbed Embed = new MessageEmbed();
+
+	Embed.SetTitle("Testing SendMessageEmbed");
+	Embed.AddField("Field1", "Test1", true);
+	Embed.AddField("abc def", "deef", true);
+	Embed.AddField("Field1", "Test1", false);
+	Embed.AddField("abc def", "deef", false);
+
+	gBot.SendMessageEmbedToChannelID(channelid, "Message", Embed);
 
 	return Plugin_Handled;
 }
