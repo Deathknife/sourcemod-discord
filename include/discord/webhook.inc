@@ -61,7 +61,7 @@ methodmap DiscordWebHook < Handle {
 	/**
 	 * Note: Deletes the MessageEmbed Object!
 	 */
-	public void Embed(MessageEmbed Object) {
+	public void Embed(Handle Object) {
 		//this.UpdateDataObject("embeds", Object);
 		Handle data = this.Data;
 		Handle hArray = json_object_get(data, "embeds");
@@ -74,7 +74,6 @@ methodmap DiscordWebHook < Handle {
 		json_array_append_new(hArray, Object);
 		delete hArray;
 		delete data;
-
 	}
 
 	property bool tts {
