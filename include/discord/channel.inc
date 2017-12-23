@@ -1,3 +1,11 @@
+enum ChannelType {
+	GUILD_TEXT = 0,
+	DM = 1,
+	GUILD_VOICE = 2,
+	GROUP_DM = 3,
+	GUILD_CATEGORY = 4
+};
+
 methodmap DiscordChannel < StringMap {
 	public DiscordChannel() {
 		Handle hObj = json_object();
@@ -18,8 +26,8 @@ methodmap DiscordChannel < StringMap {
 		JsonObjectGetString(this, "name", buffer, maxlength);
 	}
 	
-	public void GetType(char[] buffer, int maxlength) {
-		JsonObjectGetString(this, "type", buffer, maxlength);
+	public ChannelType GetType() {
+		view_as<ChannelType>(JsonObjectGetInt(this, "type"));
 	}
 	
 	property int Position {
@@ -60,10 +68,7 @@ methodmap DiscordChannel < StringMap {
 	
 	property bool IsText {
 		public get() {
-			char type[8];
-			this.GetType(type, sizeof(type));
-			if(StrEqual(type, "text", false)) return true;
-			return false;
+			return this.GetType() == GUILD_TEXT;
 		}
 	}
 }
