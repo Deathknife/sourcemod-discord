@@ -26,15 +26,9 @@ methodmap DiscordChannel < StringMap {
 	public void GetName(char[] buffer, int maxlength) {
 		JsonObjectGetString(this, "name", buffer, maxlength);
 	}
-<<<<<<< HEAD
 	
 	public ChannelType GetType() {
 		view_as<ChannelType>(JsonObjectGetInt(this, "type"));
-=======
-
-	public void GetType(char[] buffer, int maxlength) {
-		JsonObjectGetString(this, "type", buffer, maxlength);
->>>>>>> master
 	}
 
 	property int Position {
