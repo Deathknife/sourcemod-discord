@@ -91,7 +91,7 @@ methodmap DiscordWebHook < Handle {
 		return this.GetDataString("username", buffer, maxlength);
 	}
 
-	public void SetUsername(char[] name) {
+	public void SetUsername(const char[] name) {
 		this.UpdateDataObject("username", json_string(name));
 	}
 
@@ -99,7 +99,7 @@ methodmap DiscordWebHook < Handle {
 		return this.GetDataString("icon_url", buffer, maxlength);
 	}
 
-	public void SetAvatar(char[] icon_url) {
+	public void SetAvatar(const char[] icon_url) {
 		this.UpdateDataObject("icon_url", json_string(icon_url));
 	}
 
@@ -107,7 +107,7 @@ methodmap DiscordWebHook < Handle {
 		return this.GetDataString("content", buffer, maxlength);
 	}
 
-	public void SetContent(char[] content) {
+	public void SetContent(const char[] content) {
 		this.UpdateDataObject("content", json_string(content));
 	}
 

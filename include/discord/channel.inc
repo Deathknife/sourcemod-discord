@@ -42,7 +42,7 @@ methodmap DiscordChannel < StringMap {
 		JsonObjectGetString(this, "last_message_id", buffer, maxlength);
 	}
 	
-	public void SetLastMessageID(char[] id) {
+	public void SetLastMessageID(const char[] id) {
 		json_object_set_new(this, "last_message_id", json_string(id));
 	}
 	

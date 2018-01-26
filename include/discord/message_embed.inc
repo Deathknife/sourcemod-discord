@@ -8,7 +8,7 @@ methodmap MessageEmbed < Handle {
 		return JsonObjectGetString(this, "color", buffer, maxlength);
 	}
 
-	public void SetColor(char[] color) {
+	public void SetColor(const char[] color) {
 		json_object_set_new(this, "color", json_string(color));
 	}
 
@@ -16,7 +16,7 @@ methodmap MessageEmbed < Handle {
 		return JsonObjectGetString(this, "title", buffer, maxlength);
 	}
 
-	public void SetTitle(char[] title) {
+	public void SetTitle(const char[] title) {
 		json_object_set_new(this, "title", json_string(title));
 	}
 
@@ -24,7 +24,7 @@ methodmap MessageEmbed < Handle {
 		return JsonObjectGetString(this, "title_link", buffer, maxlength);
 	}
 
-	public void SetImageLink(char[] title_link) {
+	public void SetImageLink(const char[] title_link) {
 		json_object_set_new(this, "title_link", json_string(title_link));
 	}
 
@@ -32,7 +32,7 @@ methodmap MessageEmbed < Handle {
 		return JsonObjectGetString(this, "image_url", buffer, maxlength);
 	}
 
-	public void SetImage(char[] image_url) {
+	public void SetImage(const char[] image_url) {
 		json_object_set_new(this, "image_url", json_string(image_url));
 	}
 
@@ -40,7 +40,7 @@ methodmap MessageEmbed < Handle {
 		return JsonObjectGetString(this, "author_name", buffer, maxlength);
 	}
 
-	public void SetAuthor(char[] author_name) {
+	public void SetAuthor(const char[] author_name) {
 		json_object_set_new(this, "author_name", json_string(author_name));
 	}
 
@@ -48,7 +48,7 @@ methodmap MessageEmbed < Handle {
 		return JsonObjectGetString(this, "author_link", buffer, maxlength);
 	}
 
-	public void SetAuthorLink(char[] author_link) {
+	public void SetAuthorLink(const char[] author_link) {
 		json_object_set_new(this, "author_link", json_string(author_link));
 	}
 
@@ -56,7 +56,7 @@ methodmap MessageEmbed < Handle {
 		return JsonObjectGetString(this, "author_icon", buffer, maxlength);
 	}
 
-	public void SetAuthorIcon(char[] author_icon) {
+	public void SetAuthorIcon(const char[] author_icon) {
 		json_object_set_new(this, "author_icon", json_string(author_icon));
 	}
 
@@ -64,7 +64,7 @@ methodmap MessageEmbed < Handle {
 		return JsonObjectGetString(this, "thumb_url", buffer, maxlength);
 	}
 
-	public void SetThumb(char[] thumb_url) {
+	public void SetThumb(const char[] thumb_url) {
 		json_object_set_new(this, "thumb_url", json_string(thumb_url));
 	}
 
@@ -72,7 +72,7 @@ methodmap MessageEmbed < Handle {
 		return JsonObjectGetString(this, "footer", buffer, maxlength);
 	}
 
-	public void SetFooter(char[] footer) {
+	public void SetFooter(const char[] footer) {
 		json_object_set_new(this, "footer", json_string(footer));
 	}
 
@@ -80,7 +80,7 @@ methodmap MessageEmbed < Handle {
 		return JsonObjectGetString(this, "footer_icon", buffer, maxlength);
 	}
 
-	public void SetFooterIcon(char[] footer_icon) {
+	public void SetFooterIcon(const char[] footer_icon) {
 		json_object_set_new(this, "footer_icon", json_string(footer_icon));
 	}
 	/**
@@ -96,7 +96,7 @@ methodmap MessageEmbed < Handle {
 		}
 	}
 
-	public void AddField(char[] name, char[] value, bool inline) {
+	public void AddField(const char[] name, const char[] value, bool inline) {
 		Handle hObj = json_object();
 		json_object_set_new(hObj, "name", json_string(name));
 		json_object_set_new(hObj, "value", json_string(value));
@@ -114,7 +114,7 @@ methodmap MessageEmbed < Handle {
 		return JsonObjectGetString(this, "description", buffer, maxlength);
 	}
 
-	public void SetDescription(char[] description) {
+	public void SetDescription(const char[] description) {
 		json_object_set_new(this, "description", json_string(description));
 	}
 
@@ -122,7 +122,7 @@ methodmap MessageEmbed < Handle {
 		return JsonObjectGetString(this, "url", buffer, maxlength);
 	}
 
-	public void SetURL(char[] url) {
+	public void SetURL(const char[] url) {
 		json_object_set_new(this, "url", json_string(url));
 	}
 }
