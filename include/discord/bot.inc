@@ -163,7 +163,7 @@ methodmap DiscordBot < StringMap {
 	}
 	
 	
-	public native void AddReactionID(char[] channel, char[] messageid, char[] emoji);
+	public native void AddReactionID(const char[] channel, const char[] messageid, const char[] emoji);
 	
 	public void AddReaction(DiscordChannel channel, const char[] messageid, const char[] emoji) {
 		char channelid[64];
@@ -171,7 +171,7 @@ methodmap DiscordBot < StringMap {
 		this.AddReactionID(channelid, messageid, emoji);
 	}
 	
-	public native void DeleteReactionID(char[] channel, char[] messageid, char[] emoji, char[] user);
+	public native void DeleteReactionID(const char[] channel, const char[] messageid, const char[] emoji, const char[] user);
 	
 	public void DeleteReaction(DiscordChannel channel, const char[] messageid, const char[] emoji, const char[] user) {
 		char chid[64];
@@ -193,7 +193,7 @@ methodmap DiscordBot < StringMap {
 		this.DeleteReactionID(channel, messageid, emoji, "@all");
 	}
 	
-	public native void GetReactionID(char[] channel, char[] messageid, char[] emoji, OnGetReactions fCallback=INVALID_FUNCTION, any data=0);
+	public native void GetReactionID(const char[] channel, const char[] messageid, const char[] emoji, OnGetReactions fCallback=INVALID_FUNCTION, any data=0);
 	
 	public void GetReaction(DiscordChannel channel, const char[] messageid, const char[] emoji, OnGetReactions fCallback=INVALID_FUNCTION, any data=0) {
 		char id[64];
