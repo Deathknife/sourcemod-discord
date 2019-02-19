@@ -24,7 +24,7 @@ methodmap MessageEmbed < Handle {
 		return JsonObjectGetString(this, "title_link", buffer, maxlength);
 	}
 
-	public void SetImageLink(const char[] title_link) {
+	public void SetTitleLink(const char[] title_link) {
 		json_object_set_new(this, "title_link", json_string(title_link));
 	}
 
@@ -125,4 +125,4 @@ methodmap MessageEmbed < Handle {
 	public void SetURL(const char[] url) {
 		json_object_set_new(this, "url", json_string(url));
 	}
-}
+};
