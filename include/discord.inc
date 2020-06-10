@@ -134,6 +134,15 @@ methodmap DiscordMessage < Handle {
 	public native void GetChannelID(char[] buffer, int maxlength);
 };
 
+stock void Discord_EscapeString(char[] string, int maxlen)
+{
+	ReplaceString(string, maxlen, "@", "＠");
+	ReplaceString(string, maxlen, "'", "＇");
+	ReplaceString(string, maxlen, "\"", "＂");
+}
+
+native void Discord_SendMessage(const char[] webhook, const char[] message);
+
 #include <discord/channel>
 #include <discord/message_embed>
 #include <discord/webhook>
