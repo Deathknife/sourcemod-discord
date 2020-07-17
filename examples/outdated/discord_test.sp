@@ -36,7 +36,7 @@ public void OnAllPluginsLoaded() {
 }
 
 public Action Cmd_Webhook(int client, int argc) {
-	DiscordWebHook hook = new DiscordWebHook("https://ptb.discordapp.com/api/webhooks/265660968086929419/z3_F8CEGNu1Wtdygv4v0Pg4YRBA8QxgmzFKqjkEleSf2BOuQ8Xz7Ub05ku2j-O2vofy7");
+	DiscordWebHook hook = new DiscordWebHook("https://ptb.discord.com/api/webhooks/265660968086929419/z3_F8CEGNu1Wtdygv4v0Pg4YRBA8QxgmzFKqjkEleSf2BOuQ8Xz7Ub05ku2j-O2vofy7");
 	hook.SlackMode = true;
 	
 	hook.SetUsername("Server");
@@ -48,7 +48,7 @@ public Action Cmd_Webhook(int client, int argc) {
 	hook.Send();
 	delete hook;
 	
-	hook = new DiscordWebHook("https://ptb.discordapp.com/api/webhooks/265660968086929419/z3_F8CEGNu1Wtdygv4v0Pg4YRBA8QxgmzFKqjkEleSf2BOuQ8Xz7Ub05ku2j-O2vofy7");
+	hook = new DiscordWebHook("https://ptb.discord.com/api/webhooks/265660968086929419/z3_F8CEGNu1Wtdygv4v0Pg4YRBA8QxgmzFKqjkEleSf2BOuQ8Xz7Ub05ku2j-O2vofy7");
 	hook.SetUsername("Testing");
 	hook.SlackMode = false;
 	hook.SetContent("Testing 1 2 3");
