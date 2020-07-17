@@ -18,7 +18,7 @@ Optional examples:
 
 Bot Token can be obtained from:
 
-https://discordapp.com/developers/applications/me
+https://discord.com/developers/applications/me
 
 Create a new user and turn into bot account, reveal Token and copy.
 
