@@ -96,11 +96,11 @@ methodmap DiscordWebHook < Handle {
 	}
 
 	public bool GetAvatar(char[] buffer, int maxlength) {
-		return this.GetDataString("icon_url", buffer, maxlength);
+		return this.GetDataString("avatar_url", buffer, maxlength);
 	}
 
 	public void SetAvatar(const char[] icon_url) {
-		this.UpdateDataObject("icon_url", json_string(icon_url));
+		this.UpdateDataObject("avatar_url", json_string(icon_url));
 	}
 
 	public bool GetContent(char[] buffer, int maxlength) {
