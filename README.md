@@ -3,7 +3,7 @@ Discord API for Sourcemod. There's a lot more to add. Changes will be happening 
 
 # IMPORTANT
 Before you are able to send messages, you have to create a websocket connection with the bot atleast once. Simply, do this:
-http://scooterx3.net/2016-05-25/discord-bot.html
+http://web.archive.org/web/20171202000621/http://scooterx3.net/2016-05-25/discord-bot.html
 
 (Or paste this into browser -> console: http://pastebin.com/3g2HbTjY )
 
